@@ -47,7 +47,7 @@ export const init = (): Init => {
 };
 
 export const getAveragePricePerYear = (prices: IPriceValues): PricesPerYear => {
-  const pricesPerYearArr: PricesPerYearArr = prices.reduce((acc, [priceDate, price, _]) => {
+  const objectWithArrayOfPricesByYear = prices.reduce((acc, [priceDate, price, _]) => {
     const year = priceDate.split(' ')[2];
     if (Object.keys(acc).includes(year)) {
       acc[year].push(price);
@@ -55,12 +55,12 @@ export const getAveragePricePerYear = (prices: IPriceValues): PricesPerYear => {
     }
     return { ...acc, [year]: [price] };
   }, {} as PricesPerYearArr);
-  const pricesPerYear = Object.entries(pricesPerYearArr).reduce(
+  const avgPricesPerYear = Object.entries(objectWithArrayOfPricesByYear).reduce(
     (acc, [year, values]) => ({
       ...acc,
       [year]: values.reduce((a, c, i, arr) => (i !== arr.length - 1 ? a + c : +((a + c) / arr.length).toFixed(2)), 0)
     }),
     {} as PricesPerYear
   );
-  return pricesPerYear;
+  return avgPricesPerYear;
 };
