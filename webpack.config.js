@@ -10,8 +10,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: '[name].bundle.[contenthash:6].js',
-    chunkFilename: '[name].bundle.[contenthash:6].js',
+    filename: 'script.js',
+    chunkFilename: 'script.js',
     publicPath: '/'
   },
   module: {
@@ -26,14 +26,14 @@ module.exports = {
   devtool: process.env.MODE === 'production' ? 'none' : 'inline-sourse-map',
   devServer: {
     open: true,
-    port: 3000
+    port: 27060
   },
   resolve: {
     extensions: ['.ts', '.js']
   },
   plugins: [
     new webpack.ProgressPlugin(),
-    new CleanWebpackPlugin(),
+    // new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './public/index.html'
