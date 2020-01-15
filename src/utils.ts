@@ -132,9 +132,9 @@ export const init = (): Init => {
   const languageRaw: string = getUserCookie().Steam_Language || Languages['english'];
   const countryInfo = countryInfoArray.find(el => el.language === languageRaw);
 
-  const language: string = countryInfo ? countryInfo.language : Languages['english'];
-  const country: string = countryInfo ? countryInfo.countryCode : CountryCode['EN'];
-  const currency: number = countryInfo ? countryInfo.currency : Currency['USD'];
+  const language: string = countryInfo?.language || Languages['english'];
+  const country: string = countryInfo?.countryCode || CountryCode['EN'];
+  const currency: number = countryInfo?.currency || Currency['USD'];
   return { gameID, itemName, currency, language, country };
 };
 
