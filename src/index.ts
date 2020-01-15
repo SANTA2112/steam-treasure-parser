@@ -12,12 +12,12 @@ import {
 import { init, getAveragePricePerYear } from './utils';
 
 (async () => {
-  const { gameID, currency, itemName, lng, country } = init();
+  const { gameID, currency, itemName, language, country } = init();
   const itemPrice: IResponse<IPrice | IPriceError> = await createReq(
-    PRICE_OVERVIEW_URL(gameID, lng, currency, itemName)
+    PRICE_OVERVIEW_URL(gameID, language, currency, itemName)
   );
   const itemPriceHistrory: IResponse<IPriceHistory | IPriceError> = await createReq(
-    PRICE_HISTIRY_URL(gameID, lng, currency, itemName)
+    PRICE_HISTIRY_URL(gameID, language, currency, itemName)
   );
   const itemTypeInfo: IResponse<ItemType | IPriceError> = await createReq(
     ITEM_TYPE_URL(gameID, country, currency, itemName)
