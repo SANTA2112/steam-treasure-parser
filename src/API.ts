@@ -67,7 +67,7 @@ const handleError = (error: AxiosError): IResponse<IPriceError> => {
 
 const BASE_URL: string = 'https://steamcommunity.com/market';
 export const PRICE_OVERVIEW_URL = (
-  appid: number,
+  appid: string,
   country: string,
   currency: Currency,
   market_hash_name: string
@@ -75,14 +75,14 @@ export const PRICE_OVERVIEW_URL = (
   `/priceoverview?appid=${appid}&country=${country}&currency=${currency}&market_hash_name=${market_hash_name}`;
 
 export const PRICE_HISTIRY_URL = (
-  appid: number,
+  appid: string,
   country: string,
   currency: Currency,
   market_hash_name: string
 ): string =>
   `/pricehistory?appid=${appid}&country=${country}&currency=${currency}&market_hash_name=${market_hash_name}`;
 
-export const ITEM_TYPE_URL = (appid: number, country: string, currency: Currency, market_hash_name: string): string =>
+export const ITEM_TYPE_URL = (appid: string, country: string, currency: Currency, market_hash_name: string): string =>
   `/listings/${appid}/${market_hash_name}/render/?start=0&count=1&language=${country}&currency=${currency}`;
 
 const config: AxiosRequestConfig = {
