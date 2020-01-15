@@ -41,6 +41,7 @@ interface Init {
   itemName: string;
   currency: Currency;
   lng: string;
+  country: string;
 }
 
 export const init = (): Init => {
@@ -48,16 +49,15 @@ export const init = (): Init => {
     /https?:\/\/steamcommunity.com\/market\/listings\/(?<gameID>\d+)\/(?<itemName>.+)\/?/
   )!;
   const { gameID, itemName } = parsedString.groups as Groups;
-  const lng =
+  const country =
     document.cookie
       .split('; ')
       .reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {} as Partial<Cookie>)
-      .Steam_Language === 'english'
-      ? 'EN'
-      : 'RU';
+      .Steam_Language || 'english';
 
+  const lng = country === 'english' ? 'EN' : 'RU';
   const currency = lng === 'EN' ? Currency.USD : Currency.RUB;
-  return { gameID: +gameID, itemName, currency, lng };
+  return { gameID: +gameID, itemName, currency, lng, country };
 };
 
 export const getAveragePricePerYear = (prices: IPriceValues): PricesPerYear => {
