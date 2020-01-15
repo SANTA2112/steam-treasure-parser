@@ -12,6 +12,65 @@ export enum Currency {
   MYR
 }
 
+export enum Languages {
+  schinese = 'schinese',
+  tchinese = 'tchinese',
+  japanese = 'japanese',
+  koreana = 'koreana',
+  thai = 'thai',
+  bulgarian = 'bulgarian',
+  czech = 'czech',
+  danish = 'danish',
+  german = 'german',
+  english = 'english',
+  spanish = 'spanish',
+  latam = 'latam',
+  greek = 'greek',
+  french = 'french',
+  italian = 'italian',
+  hungarian = 'hungarian',
+  dutch = 'dutch',
+  norwegian = 'norwegian',
+  polish = 'polish',
+  portuguese = 'portuguese',
+  brazilian = 'brazilian',
+  romanian = 'romanian',
+  russian = 'russian',
+  finnish = 'finnish',
+  swedish = 'swedish',
+  turkish = 'turkish',
+  vietnamese = 'vietnamese',
+  ukrainian = 'ukrainian'
+}
+
+export enum CountryCode {
+  ZH = 'ZH',
+  JA = 'JA',
+  KO = 'KO',
+  TH = 'TH',
+  BG = 'BG',
+  CS = 'CS',
+  DA = 'DA',
+  DE = 'DE',
+  EN = 'EN',
+  ES = 'ES',
+  EL = 'EL',
+  FR = 'FR',
+  IT = 'IT',
+  HU = 'HU',
+  NL = 'NL',
+  NO = 'NO',
+  PL = 'PL',
+  PT = 'PT',
+  RO = 'RO',
+  RU = 'RU',
+  FI = 'FI',
+  SV = 'SV',
+  TR = 'TR',
+  VI = 'VI',
+  UK = 'UK'
+}
+
 type Groups = {
   [key: string]: string;
 };
@@ -35,29 +94,48 @@ type Cookie = {
   app_impressions: string;
   Steam_Language: string;
 };
-
 interface Init {
-  gameID: number;
+  gameID: string;
   itemName: string;
   currency: Currency;
-  lng: string;
+  language: string;
   country: string;
 }
+interface CountryInfo<T, U, S> {
+  language: T;
+  currency: U;
+  countryCode: S;
+}
+
+const countryInfoArray: CountryInfo<Languages, Currency, CountryCode>[] = [
+  {
+    language: Languages.schinese,
+    currency: Currency.YenSign,
+    countryCode: CountryCode.ZH
+  },
+  {
+    language: Languages.english,
+    currency: Currency.USD,
+    countryCode: CountryCode.EN
+  }
+];
+
+const getUserCookie = (): Partial<Cookie> =>
+  document.cookie.split('; ').reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {});
 
 export const init = (): Init => {
   const parsedString = window.location.href.match(
     /https?:\/\/steamcommunity.com\/market\/listings\/(?<gameID>\d+)\/(?<itemName>.+)\/?/
   )!;
   const { gameID, itemName } = parsedString.groups as Groups;
-  const country =
-    document.cookie
-      .split('; ')
-      .reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {} as Partial<Cookie>)
-      .Steam_Language || 'english';
 
-  const lng = country === 'english' ? 'EN' : 'RU';
-  const currency = lng === 'EN' ? Currency.USD : Currency.RUB;
-  return { gameID: +gameID, itemName, currency, lng, country };
+  const languageRaw: string = getUserCookie().Steam_Language || Languages['english'];
+  const countryInfo = countryInfoArray.find(el => el.language === languageRaw);
+
+  const language: string = countryInfo ? countryInfo.language : Languages['english'];
+  const country: string = countryInfo ? countryInfo.countryCode : CountryCode['EN'];
+  const currency: number = countryInfo ? countryInfo.currency : Currency['USD'];
+  return { gameID, itemName, currency, language, country };
 };
 
 export const getAveragePricePerYear = (prices: IPriceValues): PricesPerYear => {
