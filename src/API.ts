@@ -20,7 +20,7 @@ export interface ItemType {
     [key: string]: {
       '2': {
         [key: string]: {
-          descriptions: [
+          descriptions?: [
             {
               value: string;
               color?: string;
