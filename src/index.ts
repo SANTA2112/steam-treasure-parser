@@ -12,19 +12,19 @@ import {
 import { init, getAveragePricePerYear } from './utils';
 
 (async () => {
-  const { gameID, currency, itemName, language, country } = init();
+  const { appid, currency, market_hash_name, language, country } = init();
   const itemPrice: IResponse<IPrice | IPriceError> = await createReq(
-    PRICE_OVERVIEW_URL(gameID, language, currency, itemName)
+    PRICE_OVERVIEW_URL(appid, language, currency, market_hash_name)
   );
   const itemPriceHistrory: IResponse<IPriceHistory | IPriceError> = await createReq(
-    PRICE_HISTIRY_URL(gameID, language, currency, itemName)
+    PRICE_HISTIRY_URL(appid, language, currency, market_hash_name)
   );
   const itemTypeInfo: IResponse<ItemType | IPriceError> = await createReq(
-    ITEM_TYPE_URL(gameID, country, currency, itemName)
+    ITEM_TYPE_URL(appid, country, currency, market_hash_name)
   );
   if (itemPrice.data.success && itemPriceHistrory.data.success && itemTypeInfo.data.success) {
     console.log(itemPrice.data.lowest_price);
     console.log(getAveragePricePerYear(itemPriceHistrory.data.prices));
-    console.log(itemTypeInfo.data.assets[gameID][2][Object.keys(itemTypeInfo.data.assets[gameID][2])[0]]);
+    console.log(itemTypeInfo.data.assets[appid][2][Object.keys(itemTypeInfo.data.assets[appid][2])[0]]);
   }
 })();

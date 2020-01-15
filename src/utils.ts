@@ -95,8 +95,8 @@ type Cookie = {
   Steam_Language: string;
 };
 interface Init {
-  gameID: string;
-  itemName: string;
+  appid: string;
+  market_hash_name: string;
   currency: Currency;
   language: string;
   country: string;
@@ -125,9 +125,9 @@ const getUserCookie = (): Partial<Cookie> =>
 
 export const init = (): Init => {
   const parsedString = window.location.href.match(
-    /https?:\/\/steamcommunity.com\/market\/listings\/(?<gameID>\d+)\/(?<itemName>.+)\/?/
+    /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>.+)\/?/
   )!;
-  const { gameID, itemName } = parsedString.groups as Groups;
+  const { appid, market_hash_name } = parsedString.groups as Groups;
 
   const languageRaw: string = getUserCookie().Steam_Language || Languages['english'];
   const countryInfo = countryInfoArray.find(el => el.language === languageRaw);
@@ -135,7 +135,7 @@ export const init = (): Init => {
   const language: string = countryInfo?.language || Languages['english'];
   const country: string = countryInfo?.countryCode || CountryCode['EN'];
   const currency: number = countryInfo?.currency || Currency['USD'];
-  return { gameID, itemName, currency, language, country };
+  return { appid, market_hash_name, currency, language, country };
 };
 
 export const getAveragePricePerYear = (prices: IPriceValues): PricesPerYear => {
