@@ -101,13 +101,13 @@ interface Init {
   language: string;
   country: string;
 }
-interface CountryInfo<T, U, S> {
-  language: T;
-  currency: U;
-  countryCode: S;
+interface CountryInfo {
+  language: Languages;
+  currency: Currency;
+  countryCode: CountryCode;
 }
 
-const countryInfoArray: CountryInfo<Languages, Currency, CountryCode>[] = [
+const countryInfoArray: CountryInfo[] = [
   {
     language: Languages.schinese,
     currency: Currency.YenSign,
