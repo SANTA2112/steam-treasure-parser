@@ -1,18 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, AxiosInstance } from 'axios';
-
-export enum Currency {
-  USD,
-  PoundSign,
-  EUR,
-  CHF,
-  RUB,
-  Zloty,
-  BRL,
-  YenSign,
-  SEK,
-  IDR,
-  MYR
-}
+import { Currency } from './utils';
 
 export interface IPrice {
   success: boolean;

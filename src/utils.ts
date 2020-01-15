@@ -1,4 +1,16 @@
-import { Currency } from './API';
+export enum Currency {
+  USD,
+  PoundSign,
+  EUR,
+  CHF,
+  RUB,
+  Zloty,
+  BRL,
+  YenSign,
+  SEK,
+  IDR,
+  MYR
+}
 
 type Groups = {
   [key: string]: string;
