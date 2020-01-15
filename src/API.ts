@@ -14,6 +14,29 @@ export interface IPriceHistory {
   price_suffix: string;
   prices: [string, number, string][];
 }
+export interface ItemType {
+  success: boolean;
+  assets: {
+    [key: string]: {
+      '2': {
+        [key: string]: {
+          descriptions: [
+            {
+              value: string;
+              color?: string;
+              type?: string;
+            }
+          ][];
+          name: string;
+          name_color: string;
+          type: string;
+          market_name: string;
+          market_hash_name: string;
+        };
+      };
+    };
+  };
+}
 
 export interface IPriceError {
   success: false;
