@@ -1,3 +1,5 @@
+import { Currency } from './API';
+
 type Groups = {
   [key: string]: string;
 };
@@ -25,7 +27,7 @@ type Cookie = {
 interface Init {
   gameID: number;
   itemName: string;
-  currency: number;
+  currency: Currency;
   lng: string;
 }
 
@@ -42,7 +44,7 @@ export const init = (): Init => {
       ? 'EN'
       : 'RU';
 
-  const currency = lng === 'EN' ? 1 : 5;
+  const currency = lng === 'EN' ? Currency.USD : Currency.RUB;
   return { gameID: +gameID, itemName, currency, lng };
 };
 

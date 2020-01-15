@@ -1,5 +1,19 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, AxiosInstance } from 'axios';
 
+export enum Currency {
+  USD,
+  PoundSign,
+  EUR,
+  CHF,
+  RUB,
+  Zloty,
+  BRL,
+  YenSign,
+  SEK,
+  IDR,
+  MYR
+}
+
 export interface IPrice {
   success: boolean;
   lowest_price?: string;
@@ -51,7 +65,7 @@ const config: AxiosRequestConfig = {
 
 const fetchAPI: AxiosInstance = axios.create(config);
 
-export const createReq = (appid: number, country: string, currency: number, market_hash_name: string) => (url: URL) =>
+export const createReq = (appid: number, country: string, currency: Currency, market_hash_name: string) => (url: URL) =>
   fetchAPI
     .get(`${url}?appid=${appid}&country=${country}&currency=${currency}&market_hash_name=${market_hash_name}`)
     .then(handleResponse)
