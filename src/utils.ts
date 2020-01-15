@@ -1,5 +1,5 @@
 export enum Currency {
-  USD,
+  USD = 1,
   PoundSign,
   EUR,
   CHF,
