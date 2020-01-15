@@ -50,10 +50,7 @@ export interface IResponse<T> {
   status: number;
 }
 
-const handleResponse = <T>(response: AxiosResponse<T>): IResponse<T> => ({
-  data: response.data,
-  status: response.status
-});
+const handleResponse = <T>(response: AxiosResponse<T>): AxiosResponse<T> => response;
 
 const handleError = (error: AxiosError): IResponse<IPriceError> => {
   if (error.response) {
