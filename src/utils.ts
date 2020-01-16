@@ -114,7 +114,7 @@ type PricesPerYear = {
 };
 
 type IPriceValues = [string, number, string][];
-type ItemTypes = string[];
+type ItemsType = 'case' | 'treasure' | 'container' | 'souvenir package';
 
 type Cookie = {
   browserid: string;
@@ -293,7 +293,7 @@ const countryInfoArray: CountryInfo[] = [
   }
 ];
 
-const itemTypes: ItemTypes = ['case', 'treasure', 'container', 'souvenir package'];
+const itemTypes: ItemsType[] = ['case', 'treasure', 'container', 'souvenir package'];
 
 const getUserCookie = (): Partial<Cookie> =>
   document.cookie.split('; ').reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {});
