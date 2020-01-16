@@ -301,11 +301,7 @@ export const init = (): Init => {
 export const getAveragePricePerYear = (prices: IPriceValues): PricesPerYear => {
   const objectWithArrayOfPricesByYear = prices.reduce((acc, [priceDate, price, _]) => {
     const year = priceDate.split(' ')[2];
-    if (Object.keys(acc).includes(year)) {
-      acc[year].push(price);
-      return acc;
-    }
-    return { ...acc, [year]: [price] };
+    return Object.keys(acc).includes(year) ? (acc[year].push(price), acc) : { ...acc, [year]: [price] };
   }, {} as PricesPerYearArr);
   const avgPricesPerYear = Object.entries(objectWithArrayOfPricesByYear).reduce(
     (acc, [year, values]) => ({
