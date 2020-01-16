@@ -7,7 +7,7 @@ import {
   IPriceHistory,
   IPriceError,
   ITEM_TYPE_URL,
-  ItemType
+  ItemTypeResponce
 } from './API';
 import { init, getAveragePricePerYear } from './utils';
 
@@ -19,7 +19,7 @@ import { init, getAveragePricePerYear } from './utils';
   const itemPriceHistrory: IResponse<IPriceHistory | IPriceError> = await createReq(
     PRICE_HISTIRY_URL(appid, language, currency, market_hash_name)
   );
-  const itemTypeInfo: IResponse<ItemType | IPriceError> = await createReq(
+  const itemTypeInfo: IResponse<ItemTypeResponce | IPriceError> = await createReq(
     ITEM_TYPE_URL(appid, country, currency, market_hash_name)
   );
   if (itemPrice.data.success && itemPriceHistrory.data.success && itemTypeInfo.data.success) {

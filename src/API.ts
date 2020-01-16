@@ -14,7 +14,7 @@ export interface IPriceHistory {
   price_suffix: string;
   prices: [string, number, string][];
 }
-export interface ItemType {
+export interface ItemTypeResponce {
   success: boolean;
   assets: {
     [key: string]: {
@@ -81,6 +81,8 @@ export const PRICE_HISTIRY_URL = (
 
 export const ITEM_TYPE_URL = (appid: string, country: string, currency: Currency, market_hash_name: string): string =>
   `/listings/${appid}/${market_hash_name}/render/?start=0&count=1&language=${country}&currency=${currency}`;
+
+export const SUB_ITEMS_URL = 'http://steamcommunity.com/market/search?q=';
 
 const config: AxiosRequestConfig = {
   baseURL: BASE_URL,
