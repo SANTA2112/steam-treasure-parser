@@ -73,30 +73,32 @@ export enum Languages {
 
 export enum CountryCode {
   BG = 'BG',
-  CS = 'CS',
-  DA = 'DA',
+  BR = 'BR',
+  CN = 'CN',
+  CZ = 'CZ',
   DE = 'DE',
-  EL = 'EL',
+  DK = 'DK',
   EN = 'EN',
   ES = 'ES',
   FI = 'FI',
   FR = 'FR',
+  GR = 'GR',
   HU = 'HU',
   IT = 'IT',
-  JA = 'JA',
-  KO = 'KO',
+  JP = 'JP',
+  KR = 'KR',
   NL = 'NL',
   NO = 'NO',
   PL = 'PL',
   PT = 'PT',
   RO = 'RO',
   RU = 'RU',
-  SV = 'SV',
+  SE = 'SE',
   TH = 'TH',
   TR = 'TR',
-  UK = 'UK',
-  VI = 'VI',
-  ZH = 'ZH'
+  TW = 'TW',
+  UA = 'UA',
+  VN = 'VN'
 }
 
 type Groups = {
@@ -137,14 +139,144 @@ interface CountryInfo {
 
 const countryInfoArray: CountryInfo[] = [
   {
-    language: Languages.russian,
-    currency: Currency.RUB,
-    countryCode: CountryCode.RU
+    language: Languages.brazilian,
+    currency: Currency.BRL,
+    countryCode: CountryCode.BR
+  },
+  {
+    language: Languages.bulgarian,
+    currency: Currency.USD,
+    countryCode: CountryCode.BG
+  },
+  {
+    language: Languages.czech,
+    currency: Currency.USD,
+    countryCode: CountryCode.CZ
+  },
+  {
+    language: Languages.danish,
+    currency: Currency.USD,
+    countryCode: CountryCode.DK
+  },
+  {
+    language: Languages.dutch,
+    currency: Currency.EUR,
+    countryCode: CountryCode.NL
   },
   {
     language: Languages.english,
     currency: Currency.USD,
     countryCode: CountryCode.EN
+  },
+  {
+    language: Languages.finnish,
+    currency: Currency.USD,
+    countryCode: CountryCode.FI
+  },
+  {
+    language: Languages.french,
+    currency: Currency.USD,
+    countryCode: CountryCode.FR
+  },
+  {
+    language: Languages.german,
+    currency: Currency.USD,
+    countryCode: CountryCode.DE
+  },
+  {
+    language: Languages.greek,
+    currency: Currency.USD,
+    countryCode: CountryCode.GR
+  },
+  {
+    language: Languages.hungarian,
+    currency: Currency.USD,
+    countryCode: CountryCode.HU
+  },
+  {
+    language: Languages.italian,
+    currency: Currency.USD,
+    countryCode: CountryCode.IT
+  },
+  {
+    language: Languages.japanese,
+    currency: Currency.JPY,
+    countryCode: CountryCode.JP
+  },
+  {
+    language: Languages.koreana,
+    currency: Currency.KRW,
+    countryCode: CountryCode.KR
+  },
+  {
+    language: Languages.latam,
+    currency: Currency.USD,
+    countryCode: CountryCode.ES
+  },
+  {
+    language: Languages.norwegian,
+    currency: Currency.NOK,
+    countryCode: CountryCode.NO
+  },
+  {
+    language: Languages.polish,
+    currency: Currency.PLN,
+    countryCode: CountryCode.PL
+  },
+  {
+    language: Languages.portuguese,
+    currency: Currency.USD,
+    countryCode: CountryCode.PT
+  },
+  {
+    language: Languages.romanian,
+    currency: Currency.USD,
+    countryCode: CountryCode.RO
+  },
+  {
+    language: Languages.russian,
+    currency: Currency.RUB,
+    countryCode: CountryCode.RU
+  },
+  {
+    language: Languages.schinese,
+    currency: Currency.CNY,
+    countryCode: CountryCode.CN
+  },
+  {
+    language: Languages.spanish,
+    currency: Currency.USD,
+    countryCode: CountryCode.ES
+  },
+  {
+    language: Languages.swedish,
+    currency: Currency.CHF,
+    countryCode: CountryCode.SE
+  },
+  {
+    language: Languages.tchinese,
+    currency: Currency.CNY,
+    countryCode: CountryCode.TW
+  },
+  {
+    language: Languages.thai,
+    currency: Currency.THB,
+    countryCode: CountryCode.TH
+  },
+  {
+    language: Languages.turkish,
+    currency: Currency.TRY,
+    countryCode: CountryCode.TR
+  },
+  {
+    language: Languages.ukrainian,
+    currency: Currency.UAH,
+    countryCode: CountryCode.UA
+  },
+  {
+    language: Languages.vietnamese,
+    currency: Currency.VND,
+    countryCode: CountryCode.VN
   }
 ];
 
