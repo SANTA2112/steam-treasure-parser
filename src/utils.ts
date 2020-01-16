@@ -113,10 +113,10 @@ type PricesPerYear = {
   [key: string]: number;
 };
 
-type IPriceValues = [string, number, string][];
+type PriceValues = [string, number, string][];
 type ItemsType = 'case' | 'treasure' | 'container' | 'souvenir package';
 
-type Cookie = {
+type ICookie = {
   browserid: string;
   timezoneOffset: string;
   steamCountry: string;
@@ -125,14 +125,14 @@ type Cookie = {
   app_impressions: string;
   Steam_Language: string;
 };
-interface Init {
+interface IInit {
   appid: string;
   market_hash_name: string;
   currency: Currency;
   language: string;
   country: string;
 }
-interface CountryInfo {
+interface ICountryInfo {
   language: Languages;
   currency: Currency;
   countryCode: CountryCode;
@@ -150,7 +150,7 @@ interface IItemType {
   market_hash_name: string;
 }
 
-const countryInfoArray: CountryInfo[] = [
+const countryInfoArray: ICountryInfo[] = [
   {
     language: Languages.brazilian,
     currency: Currency.BRL,
@@ -295,16 +295,16 @@ const countryInfoArray: CountryInfo[] = [
 
 const itemTypes: ItemsType[] = ['case', 'treasure', 'container', 'souvenir package'];
 
-const getUserCookie = (): Partial<Cookie> =>
+const getUserICookie = (): Partial<ICookie> =>
   document.cookie.split('; ').reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {});
 
-export const init = (): Init => {
+export const init = (): IInit => {
   const parsedString = window.location.href.match(
     /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>.+)\/?/
   )!;
   const { appid, market_hash_name } = parsedString.groups as Groups;
 
-  const languageRaw: string = getUserCookie().Steam_Language || Languages.english;
+  const languageRaw: string = getUserICookie().Steam_Language || Languages.english;
   const countryInfo = countryInfoArray.find(el => el.language === languageRaw);
 
   const language: string = countryInfo?.language || Languages.english;
@@ -313,7 +313,7 @@ export const init = (): Init => {
   return { appid, market_hash_name, currency, language, country };
 };
 
-export const getAveragePricePerYear = (prices: IPriceValues): PricesPerYear => {
+export const getAveragePricePerYear = (prices: PriceValues): PricesPerYear => {
   const objectWithArrayOfPricesByYear = prices.reduce((acc, [priceDate, price, _]) => {
     const year = priceDate.split(' ')[2];
     return Object.keys(acc).includes(year) ? (acc[year].push(price), acc) : { ...acc, [year]: [price] };

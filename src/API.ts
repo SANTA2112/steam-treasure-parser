@@ -14,7 +14,7 @@ export interface IPriceHistory {
   price_suffix: string;
   prices: [string, number, string][];
 }
-export interface ItemTypeResponce {
+export interface IItemTypeResponce {
   success: boolean;
   assets: {
     [key: string]: {
