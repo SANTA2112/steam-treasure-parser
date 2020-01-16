@@ -337,7 +337,16 @@ export const getTreauseItems = (appid: string, treasureType: ItemsType, items: I
     case '570': {
       switch (treasureType) {
         case 'treasure': {
-          return items.descriptions?.filter(el => el.color && el.type === 'html' && !el.value.includes('/')) || [];
+          return (
+            items.descriptions?.filter(
+              el =>
+                el.color &&
+                el.type === 'html' &&
+                !(el.value.includes('The International') || el.value.includes('Battle Pass Levels')) &&
+                !el.value.includes('/') &&
+                !el.value.includes('On Trade Cooldown Until')
+            ) || []
+          );
         }
       }
       break;
