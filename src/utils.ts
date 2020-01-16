@@ -331,3 +331,32 @@ export const getAveragePricePerYear = (prices: IPriceValues): PricesPerYear => {
 export const getItemType = (item: IItemType): string | void =>
   item.descriptions &&
   itemTypes.find(type => item.name.toLowerCase().includes(type) || item.type.toLowerCase().includes(type));
+
+export const getTreauseItems = (appid: string, treasureType: ItemsType, items: IItemType) => {
+  switch (appid) {
+    case '570': {
+      switch (treasureType) {
+        case 'treasure': {
+          return items.descriptions.filter(el => el.color && el.type === 'html' && !el.value.includes('/'));
+        }
+      }
+      break;
+    }
+    case '730': {
+      switch (treasureType) {
+        case 'case':
+        case 'container':
+        case 'souvenir package': {
+          return items.descriptions.filter(
+            el =>
+              el.color &&
+              el.type === 'html' &&
+              (el.value.includes('|') || (el.value.includes('(') && el.value.includes(')')))
+          );
+        }
+      }
+      break;
+    }
+  }
+  return [];
+};
