@@ -332,7 +332,7 @@ export const getItemType = (item: IItemType): ItemsType | void =>
   item.descriptions &&
   itemTypes.find(type => item.name.toLowerCase().includes(type) || item.type.toLowerCase().includes(type));
 
-export const getTreauseItems = (appid: string, treasureType: ItemsType, items: IItemType) => {
+export const findItemsInTreause = (appid: string, treasureType: ItemsType, items: IItemType) => {
   switch (appid) {
     case '570': {
       switch (treasureType) {
