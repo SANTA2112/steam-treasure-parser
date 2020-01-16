@@ -137,8 +137,8 @@ interface ICountryInfo {
   currency: Currency;
   countryCode: CountryCode;
 }
-interface IItemType {
-  descriptions: {
+export interface IItemType {
+  descriptions?: {
     value: string;
     color?: string;
     type?: string;
@@ -328,7 +328,7 @@ export const getAveragePricePerYear = (prices: PriceValues): PricesPerYear => {
   return avgPricesPerYear;
 };
 
-export const getItemType = (item: IItemType): string | void =>
+export const getItemType = (item: IItemType): ItemsType | void =>
   item.descriptions &&
   itemTypes.find(type => item.name.toLowerCase().includes(type) || item.type.toLowerCase().includes(type));
 
@@ -337,7 +337,7 @@ export const getTreauseItems = (appid: string, treasureType: ItemsType, items: I
     case '570': {
       switch (treasureType) {
         case 'treasure': {
-          return items.descriptions.filter(el => el.color && el.type === 'html' && !el.value.includes('/'));
+          return items.descriptions?.filter(el => el.color && el.type === 'html' && !el.value.includes('/')) || [];
         }
       }
       break;
@@ -347,11 +347,13 @@ export const getTreauseItems = (appid: string, treasureType: ItemsType, items: I
         case 'case':
         case 'container':
         case 'souvenir package': {
-          return items.descriptions.filter(
-            el =>
-              el.color &&
-              el.type === 'html' &&
-              (el.value.includes('|') || (el.value.includes('(') && el.value.includes(')')))
+          return (
+            items.descriptions?.filter(
+              el =>
+                el.color &&
+                el.type === 'html' &&
+                (el.value.includes('|') || (el.value.includes('(') && el.value.includes(')')))
+            ) || []
           );
         }
       }
