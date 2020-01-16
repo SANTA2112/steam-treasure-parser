@@ -293,7 +293,7 @@ const countryInfoArray: ICountryInfo[] = [
   }
 ];
 
-const itemTypes: ItemsType[] = ['case', 'treasure', 'container', 'souvenir package'];
+const itemTypes: ItemsType[] = ['souvenir package', 'case', 'container', 'treasure'];
 
 const getUserICookie = (): Partial<ICookie> =>
   document.cookie.split('; ').reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {});
