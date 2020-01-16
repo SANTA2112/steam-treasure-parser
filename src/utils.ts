@@ -1,15 +1,43 @@
 export enum Currency {
   USD = 1,
-  PoundSign,
+  GBP,
   EUR,
   CHF,
   RUB,
-  Zloty,
+  PLN,
   BRL,
-  YenSign,
-  SEK,
+  JPY,
+  NOK,
   IDR,
-  MYR
+  MYR,
+  PHP,
+  SGD,
+  THB,
+  VND,
+  KRW,
+  TRY,
+  UAH,
+  MXN,
+  CAD,
+  AUD,
+  NZD,
+  CNY,
+  INR,
+  CLP,
+  PEN,
+  COP,
+  ZAR,
+  HKD,
+  TWD,
+  SAR,
+  AED,
+  ARS = 34,
+  ILS,
+  KZT = 37,
+  KWD,
+  QAR,
+  CRC,
+  UYU
 }
 
 export enum Languages {
@@ -109,9 +137,9 @@ interface CountryInfo {
 
 const countryInfoArray: CountryInfo[] = [
   {
-    language: Languages.schinese,
-    currency: Currency.YenSign,
-    countryCode: CountryCode.ZH
+    language: Languages.russian,
+    currency: Currency.RUB,
+    countryCode: CountryCode.RU
   },
   {
     language: Languages.english,
