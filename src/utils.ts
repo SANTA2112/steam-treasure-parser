@@ -368,6 +368,7 @@ export const findItemsInTreause = (appid: string, treasureType: ItemsType, items
       }
       break;
     }
+    default:
+      return [];
   }
-  return [];
 };
