@@ -138,13 +138,11 @@ interface CountryInfo {
   countryCode: CountryCode;
 }
 interface IItemType {
-  descriptions?: [
-    {
-      value: string;
-      color?: string;
-      type?: string;
-    }
-  ][];
+  descriptions: {
+    value: string;
+    color?: string;
+    type?: string;
+  }[];
   name: string;
   name_color: string;
   type: string;
@@ -331,4 +329,5 @@ export const getAveragePricePerYear = (prices: IPriceValues): PricesPerYear => {
 };
 
 export const getItemType = (item: IItemType): string | void =>
+  item.descriptions &&
   itemTypes.find(type => item.name.toLowerCase().includes(type) || item.type.toLowerCase().includes(type));

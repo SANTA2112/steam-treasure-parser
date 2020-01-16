@@ -20,13 +20,11 @@ export interface ItemTypeResponce {
     [key: string]: {
       '2': {
         [key: string]: {
-          descriptions?: [
-            {
-              value: string;
-              color?: string;
-              type?: string;
-            }
-          ][];
+          descriptions?: {
+            value: string;
+            color?: string;
+            type?: string;
+          }[];
           name: string;
           name_color: string;
           type: string;
