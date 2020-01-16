@@ -40,7 +40,7 @@ export enum Currency {
   UYU
 }
 
-export enum Languages {
+enum Languages {
   brazilian = 'brazilian',
   bulgarian = 'bulgarian',
   czech = 'czech',
@@ -71,7 +71,7 @@ export enum Languages {
   vietnamese = 'vietnamese'
 }
 
-export enum CountryCode {
+enum CountryCode {
   BG = 'BG',
   BR = 'BR',
   CN = 'CN',
@@ -114,6 +114,7 @@ type PricesPerYear = {
 };
 
 type IPriceValues = [string, number, string][];
+type ItemTypes = string[];
 
 type Cookie = {
   browserid: string;
@@ -135,6 +136,20 @@ interface CountryInfo {
   language: Languages;
   currency: Currency;
   countryCode: CountryCode;
+}
+interface IItemType {
+  descriptions?: [
+    {
+      value: string;
+      color?: string;
+      type?: string;
+    }
+  ][];
+  name: string;
+  name_color: string;
+  type: string;
+  market_name: string;
+  market_hash_name: string;
 }
 
 const countryInfoArray: CountryInfo[] = [
@@ -280,6 +295,8 @@ const countryInfoArray: CountryInfo[] = [
   }
 ];
 
+const itemTypes: ItemTypes = ['case', 'treasure', 'container', 'souvenir package'];
+
 const getUserCookie = (): Partial<Cookie> =>
   document.cookie.split('; ').reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {});
 
@@ -312,3 +329,6 @@ export const getAveragePricePerYear = (prices: IPriceValues): PricesPerYear => {
   );
   return avgPricesPerYear;
 };
+
+export const getItemType = (item: IItemType): string | void =>
+  itemTypes.find(type => item.name.toLowerCase().includes(type) || item.type.toLowerCase().includes(type));
