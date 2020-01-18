@@ -77,3 +77,9 @@ export interface IItemProperties {
   name: string;
   type: string;
 }
+
+export interface ISubItem {
+  name: string;
+  market_hash_name: string;
+  img: string;
+}
