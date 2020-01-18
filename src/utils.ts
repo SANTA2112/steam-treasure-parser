@@ -137,18 +137,21 @@ interface ICountryInfo {
   currency: Currency;
   countryCode: CountryCode;
 }
-export interface IItemType {
+export interface IItemProperties {
   descriptions?: {
     value: string;
     color?: string;
     type?: string;
   }[];
   name: string;
-  name_color: string;
   type: string;
-  market_name: string;
-  market_hash_name: string;
 }
+
+export type ItemDescPropValues = {
+  value: string;
+  color?: string;
+  type?: string;
+};
 
 const countryInfoArray: ICountryInfo[] = [
   {
@@ -328,11 +331,15 @@ export const getAveragePricePerYear = (prices: PriceValues): PricesPerYear => {
   return avgPricesPerYear;
 };
 
-export const getItemType = (item: IItemType): ItemsType | void =>
+export const getItemType = (item: IItemProperties): ItemsType | void =>
   item.descriptions &&
   itemTypes.find(type => item.name.toLowerCase().includes(type) || item.type.toLowerCase().includes(type));
 
-export const findItemsInTreause = (appid: string, treasureType: ItemsType, items: IItemType) => {
+export const findItemsInTreause = (
+  appid: string,
+  treasureType: ItemsType,
+  items: IItemProperties
+): ItemDescPropValues[] => {
   switch (appid) {
     case '570': {
       switch (treasureType) {
@@ -368,7 +375,6 @@ export const findItemsInTreause = (appid: string, treasureType: ItemsType, items
       }
       break;
     }
-    default:
-      return [];
   }
+  return [];
 };
