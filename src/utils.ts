@@ -4,6 +4,8 @@ import { ICookie, IInit, IItemProperties } from './interfaces';
 
 import { countryInfoArray, itemTypes } from './constants';
 
+export const sleep = (ms: number): Promise<void> => new Promise(r => setTimeout(r, ms));
+
 const getUserICookie = (): Partial<ICookie> =>
   document.cookie.split('; ').reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {});
 
@@ -68,6 +70,7 @@ export const findItemsInTreause = (
       switch (treasureType) {
         case 'case':
         case 'container':
+        case 'capsule':
         case 'souvenir package': {
           return (
             items.descriptions?.filter(
