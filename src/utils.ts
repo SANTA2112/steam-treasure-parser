@@ -40,7 +40,7 @@ export enum Currency {
   UYU
 }
 
-enum Languages {
+export enum Languages {
   brazilian = 'brazilian',
   bulgarian = 'bulgarian',
   czech = 'czech',
@@ -71,7 +71,7 @@ enum Languages {
   vietnamese = 'vietnamese'
 }
 
-enum CountryCode {
+export enum CountryCode {
   BG = 'BG',
   BR = 'BR',
   CN = 'CN',
@@ -129,8 +129,8 @@ interface IInit {
   appid: string;
   market_hash_name: string;
   currency: Currency;
-  language: string;
-  country: string;
+  language: Languages;
+  country: CountryCode;
 }
 interface ICountryInfo {
   language: Languages;
@@ -307,9 +307,9 @@ export const init = (): IInit => {
   const languageRaw: string = getUserICookie().Steam_Language || Languages.english;
   const countryInfo = countryInfoArray.find(el => el.language === languageRaw);
 
-  const language: string = countryInfo?.language || Languages.english;
-  const country: string = countryInfo?.countryCode || CountryCode.EN;
-  const currency: number = countryInfo?.currency || Currency.USD;
+  const language: Languages = countryInfo?.language || Languages.english;
+  const country: CountryCode = countryInfo?.countryCode || CountryCode.EN;
+  const currency: Currency = countryInfo?.currency || Currency.USD;
   return { appid, market_hash_name, currency, language, country };
 };
 
