@@ -102,7 +102,7 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
             return [];
           }
           const html: string = await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data);
-          let temp: HTMLDivElement | null = document.createElement('div');
+          let temp: HTMLDivElement = document.createElement('div');
           temp.innerHTML = html;
           return [...temp.querySelectorAll('#searchResultsRows a')]
             .map(el => ({
