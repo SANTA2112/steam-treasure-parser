@@ -1,8 +1,9 @@
 import { Currency, Languages, CountryCode } from './enums';
 import { Groups, ItemsType, PriceValues, PricesPerYear, PricesPerYearArr, ItemDescPropValues } from './types';
-import { ICookie, IInit, IItemProperties } from './interfaces';
+import { ICookie, IInit, IItemProperties, ISubItem } from './interfaces';
 
-import { countryInfoArray, itemTypes } from './constants';
+import { doReq } from './API';
+import { countryInfoArray, itemTypes, SUB_ITEMS_URL } from './constants';
 
 export const sleep = (ms: number): Promise<void> => new Promise(r => setTimeout(r, ms));
 
@@ -83,6 +84,50 @@ export const findItemsInTreause = (
         }
       }
       break;
+    }
+  }
+  return [];
+};
+
+export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => async (
+  item: ItemDescPropValues
+): Promise<ISubItem[]> => {
+  switch (appid) {
+    case '730': {
+      switch (treasureType) {
+        case 'capsule': {
+          return [];
+        }
+        case 'case':
+        case 'container':
+        case 'souvenir package': {
+          if (item.value.toLowerCase().includes('holo') || item.value.toLowerCase().includes('foil')) {
+            return [];
+          }
+          const data: ISubItem[] = [];
+          const html: string = await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data);
+          let temp: HTMLDivElement | null = document.createElement('div');
+          temp.innerHTML = html;
+          const results = [...temp.querySelectorAll('#searchResultsRows a')] as HTMLDivElement[];
+          if (results.length !== 0) {
+            results.forEach(el =>
+              data.push({
+                name:
+                  treasureType !== 'souvenir package'
+                    ? (
+                        el.querySelector('span[style="color: #D2D2D2;"]') ||
+                        el.querySelector('span[style="color: #CF6A32;"]')
+                      )?.textContent || ''
+                    : el.querySelector('span[style="color: #FFD700;"]')?.textContent || '',
+                img: el.querySelector('img')?.src || '',
+                market_hash_name: el.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || ''
+              })
+            );
+          }
+          await sleep(2000);
+          return data.filter(el => el.name);
+        }
+      }
     }
   }
   return [];
