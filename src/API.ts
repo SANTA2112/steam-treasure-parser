@@ -93,7 +93,7 @@ const config: AxiosRequestConfig = {
 
 const fetchAPI: AxiosInstance = axios.create(config);
 
-export const createReq = (url: string) =>
+export const doReq = (url: string) =>
   fetchAPI
     .get(url)
     .then(handleResponse)
