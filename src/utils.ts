@@ -71,8 +71,8 @@ export const findItemsInTreause = (
       switch (treasureType) {
         case 'case':
         case 'container':
-        case 'capsule':
-        case 'souvenir package': {
+        case 'souvenir package':
+        case 'capsule': {
           return (
             items.descriptions?.filter(
               el =>
@@ -95,37 +95,31 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
   switch (appid) {
     case '730': {
       switch (treasureType) {
-        case 'capsule': {
-          return [];
-        }
         case 'case':
         case 'container':
         case 'souvenir package': {
           if (item.value.toLowerCase().includes('holo') || item.value.toLowerCase().includes('foil')) {
             return [];
           }
-          const data: ISubItem[] = [];
           const html: string = await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data);
           let temp: HTMLDivElement | null = document.createElement('div');
           temp.innerHTML = html;
-          const results = [...temp.querySelectorAll('#searchResultsRows a')] as HTMLDivElement[];
-          if (results.length !== 0) {
-            results.forEach(el =>
-              data.push({
-                name:
-                  treasureType !== 'souvenir package'
-                    ? (
-                        el.querySelector('span[style="color: #D2D2D2;"]') ||
-                        el.querySelector('span[style="color: #CF6A32;"]')
-                      )?.textContent || ''
-                    : el.querySelector('span[style="color: #FFD700;"]')?.textContent || '',
-                img: el.querySelector('img')?.src || '',
-                market_hash_name: el.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || ''
-              })
-            );
-          }
-          await sleep(2000);
-          return data.filter(el => el.name);
+          return [...temp.querySelectorAll('#searchResultsRows a')]
+            .map(el => ({
+              name:
+                treasureType !== 'souvenir package'
+                  ? (
+                      el.querySelector('span[style="color: #D2D2D2;"]') ||
+                      el.querySelector('span[style="color: #CF6A32;"]')
+                    )?.textContent || ''
+                  : el.querySelector('span[style="color: #FFD700;"]')?.textContent || '',
+              img: el.querySelector('img')?.src || '',
+              market_hash_name: el.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || ''
+            }))
+            .filter(el => el.name);
+        }
+        case 'capsule': {
+          return [];
         }
       }
     }
