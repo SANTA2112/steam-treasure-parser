@@ -145,7 +145,7 @@ export const countryInfoArray: ICountryInfo[] = [
   }
 ];
 
-export const itemTypes: ItemsType[] = ['souvenir package', 'case', 'container', 'treasure'];
+export const itemTypes: ItemsType[] = ['souvenir package', 'capsule', 'container', 'case', 'treasure'];
 
 export const BASE_URL: string = 'https://steamcommunity.com/market';
 
@@ -172,4 +172,4 @@ export const ITEM_TYPE_URL = (
   market_hash_name: string
 ): string => `/listings/${appid}/${market_hash_name}/render/?start=0&count=1&language=${language}&currency=${currency}`;
 
-export const SUB_ITEMS_URL = 'http://steamcommunity.com/market/search?q=';
+export const SUB_ITEMS_URL = 'https://steamcommunity.com/market/search?q=';

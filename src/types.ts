@@ -12,7 +12,7 @@ export type PricesPerYear = {
 
 export type PriceValues = [string, number, string][];
 
-export type ItemsType = 'case' | 'treasure' | 'container' | 'souvenir package';
+export type ItemsType = 'case' | 'treasure' | 'container' | 'souvenir package' | 'capsule';
 
 export type ItemDescPropValues = {
   value: string;
