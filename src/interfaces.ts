@@ -74,12 +74,15 @@ export interface ISubItem {
   img: string;
   price?: string;
 }
+
+export interface IItemPropertyDescription {
+  value: string;
+  color?: string;
+  type?: string;
+  subitems?: ISubItem[];
+  price?: string;
+}
 export interface IItemProperties {
-  descriptions?: {
-    value: string;
-    color?: string;
-    type?: string;
-    subitems?: ISubItem[];
-  }[];
+  descriptions?: IItemPropertyDescription[];
   market_hash_name: string;
 }
