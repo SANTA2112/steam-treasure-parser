@@ -96,9 +96,6 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
         case 'case':
         case 'container':
         case 'souvenir package': {
-          if (item.value.toLowerCase().includes('holo') || item.value.toLowerCase().includes('foil')) {
-            return [];
-          }
           const html: Document = parser.parseFromString(
             await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data),
             'text/html'
