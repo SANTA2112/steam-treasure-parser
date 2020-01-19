@@ -5,12 +5,21 @@ import {
   IItemTypeResponce,
   IResponse,
   IItemProperties,
-  ISubItem
+  ISubItem,
+  IItemPropertyDescription
 } from './interfaces';
 import { ItemDescPropValues, ItemsType, PricesPerYear } from './types';
 
 import { doReq } from './API';
-import { init, getAveragePricePerYear, findItemsInTreause, getItemType, getSubItemsSetParams } from './utils';
+import {
+  init,
+  getAveragePricePerYear,
+  findItemsInTreause,
+  getItemType,
+  getSubItemsSetParams,
+  giveItemsPriceSetParams,
+  sleep
+} from './utils';
 import { PRICE_HISTIRY_URL, PRICE_OVERVIEW_URL, ITEM_TYPE_URL } from './constants';
 
 const main = async () => {
@@ -37,9 +46,14 @@ const main = async () => {
       const items: ItemDescPropValues[] = findItemsInTreause(appid, itemType, itemInfo);
       itemInfo.descriptions = items;
       const getSubItems: (item: ItemDescPropValues) => Promise<ISubItem[]> = getSubItemsSetParams(appid, itemType);
+      const giveItemsPrice: (
+        item: IItemPropertyDescription
+      ) => Promise<IItemPropertyDescription> = giveItemsPriceSetParams(appid, country, currency);
       for (let item of itemInfo.descriptions) {
         item.subitems = await getSubItems(item);
+        await giveItemsPrice(item);
         console.log(`[${counter++}/${itemInfo.descriptions.length}] - ${item.value}`);
+        await sleep(2000);
       }
       console.log(JSON.stringify(itemInfo));
     }
