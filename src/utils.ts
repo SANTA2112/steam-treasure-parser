@@ -1,9 +1,9 @@
 import { Currency, Languages, CountryCode } from './enums';
 import { Groups, ItemsType, PriceValues, PricesPerYear, PricesPerYearArr, ItemDescPropValues } from './types';
-import { ICookie, IInit, IItemProperties, ISubItem } from './interfaces';
+import { ICookie, IInit, IItemProperties, ISubItem, IItemPropertyDescription, IPrice, IPriceError } from './interfaces';
 
 import { doReq } from './API';
-import { countryInfoArray, itemTypes, SUB_ITEMS_URL } from './constants';
+import { countryInfoArray, itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL } from './constants';
 
 export const sleep = (ms: number): Promise<void> => new Promise(r => setTimeout(r, ms));
 
@@ -119,4 +119,28 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
     }
   }
   return [];
+};
+
+export const giveItemsPriceSetParams = (appid: string, country: CountryCode, currency: Currency) => async (
+  item: IItemPropertyDescription
+): Promise<IItemPropertyDescription> => {
+  // TODO Refactor this shit
+  if (item.subitems?.length !== 0) {
+    for (let subItem of ('subitems' in item && item.subitems) || []) {
+      const price: IPrice | IPriceError = await doReq(
+        PRICE_OVERVIEW_URL(appid, country, currency, subItem.market_hash_name)
+      ).then(r => r.data);
+      if (price.success) subItem.price = price?.lowest_price || '';
+      else subItem.price = '';
+      await sleep(2000);
+    }
+  } else {
+    const price: IPrice | IPriceError = await doReq(PRICE_OVERVIEW_URL(appid, country, currency, item.value)).then(
+      r => r.data
+    );
+
+    if (price.success) item.price = price?.lowest_price || '';
+    else item.price = '';
+  }
+  return item;
 };
