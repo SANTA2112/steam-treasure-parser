@@ -55,11 +55,12 @@ export const findItemsInTreause = (
           return (
             items.descriptions?.filter(
               el =>
-                el.color &&
-                el.type === 'html' &&
+                ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b', 'e4ae39'].includes(
+                  ('color' in el && el.color) || ''
+                ) &&
                 !(el.value.includes('The International') || el.value.includes('Battle Pass Levels')) &&
                 !el.value.includes('/') &&
-                !el.value.includes('On Trade Cooldown Until')
+                !el.value.includes('.')
             ) || []
           );
         }
@@ -73,11 +74,8 @@ export const findItemsInTreause = (
         case 'souvenir package':
         case 'capsule': {
           return (
-            items.descriptions?.filter(
-              el =>
-                el.color &&
-                el.type === 'html' &&
-                (el.value.includes('|') || (el.value.includes('(') && el.value.includes(')')))
+            items.descriptions?.filter(el =>
+              ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(('color' in el && el.color) || '')
             ) || []
           );
         }
