@@ -68,18 +68,18 @@ export interface ICountryInfo {
   currency: Currency;
   countryCode: CountryCode;
 }
+export interface ISubItem {
+  name: string;
+  market_hash_name: string;
+  img: string;
+  price?: string;
+}
 export interface IItemProperties {
   descriptions?: {
     value: string;
     color?: string;
     type?: string;
+    subitems?: ISubItem[];
   }[];
-  name: string;
-  type: string;
-}
-
-export interface ISubItem {
-  name: string;
   market_hash_name: string;
-  img: string;
 }
