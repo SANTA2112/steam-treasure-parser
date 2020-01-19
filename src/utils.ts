@@ -92,6 +92,7 @@ export const findItemsInTreause = (
 export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => async (
   item: ItemDescPropValues
 ): Promise<ISubItem[]> => {
+  const parser = new DOMParser();
   switch (appid) {
     case '730': {
       switch (treasureType) {
@@ -101,10 +102,11 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
           if (item.value.toLowerCase().includes('holo') || item.value.toLowerCase().includes('foil')) {
             return [];
           }
-          const html: string = await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data);
-          let temp: HTMLDivElement = document.createElement('div');
-          temp.innerHTML = html;
-          return [...temp.querySelectorAll('#searchResultsRows a')]
+          const html = parser.parseFromString(
+            await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data),
+            'text/html'
+          );
+          return [...html.querySelectorAll('#searchResultsRows a')]
             .map(el => ({
               name:
                 treasureType !== 'souvenir package'
@@ -113,8 +115,8 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
                       el.querySelector('span[style="color: #CF6A32;"]')
                     )?.textContent || ''
                   : el.querySelector('span[style="color: #FFD700;"]')?.textContent || '',
-              img: el.querySelector('img')?.src || '',
-              market_hash_name: el.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || ''
+              market_hash_name: el.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '',
+              img: el.querySelector('img')?.src || ''
             }))
             .filter(el => el.name);
         }
