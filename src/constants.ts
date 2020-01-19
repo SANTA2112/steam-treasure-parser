@@ -151,23 +151,23 @@ export const BASE_URL: string = 'https://steamcommunity.com/market';
 
 export const PRICE_OVERVIEW_URL = (
   appid: string,
-  language: Languages,
+  country: CountryCode,
   currency: Currency,
   market_hash_name: string
 ): string =>
-  `/priceoverview?appid=${appid}&country=${language}&currency=${currency}&market_hash_name=${market_hash_name}`;
+  `/priceoverview?appid=${appid}&country=${country}&currency=${currency}&market_hash_name=${market_hash_name}`;
 
 export const PRICE_HISTIRY_URL = (
   appid: string,
-  language: Languages,
+  country: CountryCode,
   currency: Currency,
   market_hash_name: string
 ): string =>
-  `/pricehistory?appid=${appid}&country=${language}&currency=${currency}&market_hash_name=${market_hash_name}`;
+  `/pricehistory?appid=${appid}&country=${country}&currency=${currency}&market_hash_name=${market_hash_name}`;
 
 export const ITEM_TYPE_URL = (
   appid: string,
-  language: CountryCode,
+  language: Languages,
   currency: Currency,
   market_hash_name: string
 ): string => `/listings/${appid}/${market_hash_name}/render/?start=0&count=1&language=${language}&currency=${currency}`;

@@ -41,8 +41,7 @@ export const getAveragePricePerYear = (prices: PriceValues): PricesPerYear => {
 };
 
 export const getItemType = (item: IItemProperties): ItemsType | void =>
-  item.descriptions &&
-  itemTypes.find(type => item.name.toLowerCase().includes(type) || item.type.toLowerCase().includes(type));
+  item.descriptions && itemTypes.find(type => item.market_hash_name.toLowerCase().includes(type));
 
 export const findItemsInTreause = (
   appid: string,
@@ -92,7 +91,7 @@ export const findItemsInTreause = (
 export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => async (
   item: ItemDescPropValues
 ): Promise<ISubItem[]> => {
-  const parser = new DOMParser();
+  const parser: DOMParser = new DOMParser();
   switch (appid) {
     case '730': {
       switch (treasureType) {
@@ -102,7 +101,7 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
           if (item.value.toLowerCase().includes('holo') || item.value.toLowerCase().includes('foil')) {
             return [];
           }
-          const html = parser.parseFromString(
+          const html: Document = parser.parseFromString(
             await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data),
             'text/html'
           );
@@ -120,9 +119,7 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
             }))
             .filter(el => el.name);
         }
-        case 'capsule': {
-          return [];
-        }
+        case 'capsule':
       }
     }
   }
