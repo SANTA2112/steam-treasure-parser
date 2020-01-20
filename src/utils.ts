@@ -135,9 +135,15 @@ export const giveItemsPriceSetParams = (appid: string, country: CountryCode, cur
       await sleep(2000);
     }
   } else {
-    const price: IPrice | IPriceError = await doReq(PRICE_OVERVIEW_URL(appid, country, currency, item.value)).then(
-      r => r.data
+    const parser: DOMParser = new DOMParser();
+    const html: Document = parser.parseFromString(
+      await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data),
+      'text/html'
     );
+    const market_hash_name: string = html.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '';
+    const price: IPrice | IPriceError = await doReq(
+      PRICE_OVERVIEW_URL(appid, country, currency, market_hash_name)
+    ).then(r => r.data);
 
     if (price.success) item.price = price?.lowest_price || '';
     else item.price = '';
