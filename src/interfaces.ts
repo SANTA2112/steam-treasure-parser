@@ -34,23 +34,37 @@ export interface IPriceHistory {
   price_suffix: string;
   prices: [string, number, string][];
 }
+
+export interface ISubItem {
+  name: string;
+  market_hash_name: string;
+  img: string;
+  price?: string;
+}
+
+export interface IItemPropertyDescription {
+  value: string;
+  color?: string;
+  type?: string;
+  subitems: ISubItem[];
+  price: string;
+}
+
+export interface IItemProperties {
+  descriptions: IItemPropertyDescription[];
+  name: string;
+  name_color: string;
+  type: string;
+  market_name: string;
+  market_hash_name: string;
+}
+
 export interface IItemTypeResponce {
   success: boolean;
   assets: {
     [key: string]: {
       '2': {
-        [key: string]: {
-          descriptions?: {
-            value: string;
-            color?: string;
-            type?: string;
-          }[];
-          name: string;
-          name_color: string;
-          type: string;
-          market_name: string;
-          market_hash_name: string;
-        };
+        [key: string]: IItemProperties;
       };
     };
   };
@@ -88,24 +102,6 @@ export interface ICountryInfo {
   language: Languages;
   currency: Currency;
   countryCode: CountryCode;
-}
-export interface ISubItem {
-  name: string;
-  market_hash_name: string;
-  img: string;
-  price?: string;
-}
-
-export interface IItemPropertyDescription {
-  value: string;
-  color?: string;
-  type?: string;
-  subitems?: ISubItem[];
-  price?: string;
-}
-export interface IItemProperties {
-  descriptions?: IItemPropertyDescription[];
-  market_hash_name: string;
 }
 
 export interface IUserLangInfo {
