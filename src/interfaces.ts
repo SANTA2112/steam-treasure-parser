@@ -1,5 +1,26 @@
 import { Currency, Languages, CountryCode } from './enums';
 
+export interface IFetcher<T, R> {
+  (arg: T): Promise<R | R[]>;
+}
+
+export interface IFetchError<T> {
+  message: string;
+  src: T;
+}
+
+export interface IOptions {
+  /** Колличество одновременных запросов */
+  streams?: number;
+  /** Время задержки между запросами в ms */
+  timeout?: number;
+}
+
+export interface IDone<T, R> {
+  results: R[];
+  errors: IFetchError<T>[];
+}
+
 export interface IPrice {
   success: boolean;
   lowest_price?: string;
