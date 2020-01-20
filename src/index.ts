@@ -18,7 +18,8 @@ import {
   getItemType,
   getSubItemsSetParams,
   giveItemsPriceSetParams,
-  sleep
+  sleep,
+  parallel
 } from './utils';
 import { PRICE_HISTIRY_URL, PRICE_OVERVIEW_URL, ITEM_TYPE_URL } from './constants';
 
@@ -42,20 +43,27 @@ const main = async () => {
       itemTypeInfo.data.assets[appid][2][Object.keys(itemTypeInfo.data.assets[appid][2])[0]];
     const itemType: ItemsType | void = getItemType(itemInfo);
     if (itemType) {
-      let counter = 1;
       const items: ItemDescPropValues[] = findItemsInTreause(appid, itemType, itemInfo);
       itemInfo.descriptions = items;
       const getSubItems: (item: ItemDescPropValues) => Promise<ISubItem[]> = getSubItemsSetParams(appid, itemType);
       const giveItemsPrice: (
         item: IItemPropertyDescription
       ) => Promise<IItemPropertyDescription> = giveItemsPriceSetParams(appid, country, currency);
-      for (let item of itemInfo.descriptions) {
-        item.subitems = await getSubItems(item);
-        await giveItemsPrice(item);
-        console.log(`[${counter++}/${itemInfo.descriptions.length}] - ${item.value}`);
-        await sleep(2000);
-      }
-      console.log(JSON.stringify(itemInfo));
+      const { results, errors } = await parallel<ItemDescPropValues, ISubItem>(itemInfo.descriptions, getSubItems, {
+        streams: 3,
+        timeout: 600
+      });
+      itemInfo.descriptions.forEach(item => (item.subitems = results.filter(el => el.name.includes(item.value))));
+
+      console.log(JSON.stringify(itemInfo.descriptions));
+      console.log(JSON.stringify(results));
+      // for (let item of itemInfo.descriptions) {
+      //   item.subitems = await getSubItems(item);
+      //   await giveItemsPrice(item);
+      //   console.log(`[${counter++}/${itemInfo.descriptions.length}] - ${item.value}`);
+      //   await sleep(2000);
+      // }
+      // console.log(JSON.stringify(itemInfo));
     }
   }
 };
