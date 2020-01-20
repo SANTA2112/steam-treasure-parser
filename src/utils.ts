@@ -11,7 +11,9 @@ import {
   IDone,
   IFetcher,
   IFetchError,
-  IOptions
+  IOptions,
+  IUserLangInfo,
+  ICountryInfo
 } from './interfaces';
 
 import { doReq } from './API';
@@ -60,13 +62,16 @@ const getUserICookie = (): Partial<ICookie> =>
   document.cookie.split('; ').reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {});
 
 export const init = (): IInit => {
-  const parsedString = window.location.href.match(
+  const parsedString: RegExpMatchArray = window.location.href.match(
     /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>.+)\/?/
   )!;
   const { appid, market_hash_name } = parsedString.groups as Groups;
-
-  const languageRaw: string = getUserICookie().Steam_Language || Languages.english;
-  const countryInfo = countryInfoArray.find(el => el.language === languageRaw);
+  const userLangInfo: IUserLangInfo = {
+    language: getUserICookie().Steam_Language,
+    countryCode: decodeURIComponent(getUserICookie().steamCountry || '').split('|')[0] || CountryCode.EN
+  };
+  let countryInfo: ICountryInfo | undefined = countryInfoArray.find(el => el.language === userLangInfo.language);
+  if (!countryInfo) countryInfo = countryInfoArray.find(el => el.countryCode === userLangInfo.countryCode);
 
   const language: Languages = countryInfo?.language || Languages.english;
   const country: CountryCode = countryInfo?.countryCode || CountryCode.EN;

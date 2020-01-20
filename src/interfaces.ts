@@ -107,3 +107,8 @@ export interface IItemProperties {
   descriptions?: IItemPropertyDescription[];
   market_hash_name: string;
 }
+
+export interface IUserLangInfo {
+  language: string | void;
+  countryCode: string;
+}
