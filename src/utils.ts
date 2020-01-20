@@ -1,5 +1,5 @@
 import { Currency, Languages, CountryCode } from './enums';
-import { Groups, ItemsType, PriceValues, PricesPerYear, PricesPerYearArr, ItemDescPropValues } from './types';
+import { Groups, ItemsType, PriceValues, PricesPerYear, PricesPerYearArr } from './types';
 import {
   ICookie,
   IInit,
@@ -101,21 +101,19 @@ export const findItemsInTreause = (
   appid: string,
   treasureType: ItemsType,
   items: IItemProperties
-): ItemDescPropValues[] => {
+): IItemPropertyDescription[] => {
   switch (appid) {
     case '570': {
       switch (treasureType) {
         case 'treasure': {
-          return (
-            items.descriptions?.filter(
-              el =>
-                ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b', 'e4ae39'].includes(
-                  ('color' in el && el.color) || ''
-                ) &&
-                !(el.value.includes('The International') || el.value.includes('Battle Pass Levels')) &&
-                !el.value.includes('/') &&
-                !el.value.includes('.')
-            ) || []
+          return items.descriptions.filter(
+            el =>
+              ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b', 'e4ae39'].includes(
+                ('color' in el && el.color) || ''
+              ) &&
+              !(el.value.includes('The International') || el.value.includes('Battle Pass Levels')) &&
+              !el.value.includes('/') &&
+              !el.value.includes('.')
           );
         }
       }
@@ -127,10 +125,8 @@ export const findItemsInTreause = (
         case 'container':
         case 'souvenir package':
         case 'capsule': {
-          return (
-            items.descriptions?.filter(el =>
-              ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(('color' in el && el.color) || '')
-            ) || []
+          return items.descriptions.filter(el =>
+            ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(('color' in el && el.color) || '')
           );
         }
       }
@@ -141,8 +137,8 @@ export const findItemsInTreause = (
 };
 
 export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => async (
-  item: ItemDescPropValues
-): Promise<ISubItem[]> => {
+  item: IItemPropertyDescription
+): Promise<void> => {
   const parser: DOMParser = new DOMParser();
   switch (appid) {
     case '730': {
@@ -154,7 +150,7 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
             await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data),
             'text/html'
           );
-          return [...html.querySelectorAll('#searchResultsRows a')]
+          item.subitems = [...html.querySelectorAll('#searchResultsRows a')]
             .map(el => ({
               name:
                 treasureType !== 'souvenir package'
@@ -172,22 +168,29 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
       }
     }
   }
-  return [];
+  item.subitems = [];
+};
+
+const addPriceForSubItemsSetParams = (appid: string, country: CountryCode, currency: Currency) => async (
+  subItem: ISubItem
+): Promise<void> => {
+  const price: IPrice | IPriceError = await doReq(
+    PRICE_OVERVIEW_URL(appid, country, currency, subItem.market_hash_name)
+  ).then(r => r.data);
+  if (price.success) subItem.price = price?.lowest_price || '';
+  else subItem.price = '';
 };
 
 export const giveItemsPriceSetParams = (appid: string, country: CountryCode, currency: Currency) => async (
   item: IItemPropertyDescription
-): Promise<IItemPropertyDescription> => {
-  // TODO Refactor this shit
-  if (item.subitems?.length !== 0) {
-    for (let subItem of ('subitems' in item && item.subitems) || []) {
-      const price: IPrice | IPriceError = await doReq(
-        PRICE_OVERVIEW_URL(appid, country, currency, subItem.market_hash_name)
-      ).then(r => r.data);
-      if (price.success) subItem.price = price?.lowest_price || '';
-      else subItem.price = '';
-      await sleep(2000);
-    }
+): Promise<void> => {
+  if (item.subitems.length !== 0) {
+    const addPriceForSubItems: (subItem: ISubItem) => Promise<void> = addPriceForSubItemsSetParams(
+      appid,
+      country,
+      currency
+    );
+    await parallel<ISubItem, void>(item.subitems, addPriceForSubItems, { streams: 1, timeout: 2750 });
   } else {
     const parser: DOMParser = new DOMParser();
     const html: Document = parser.parseFromString(
@@ -202,5 +205,4 @@ export const giveItemsPriceSetParams = (appid: string, country: CountryCode, cur
     if (price.success) item.price = price?.lowest_price || '';
     else item.price = '';
   }
-  return item;
 };

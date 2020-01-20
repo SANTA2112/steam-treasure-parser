@@ -8,7 +8,7 @@ import {
   ISubItem,
   IItemPropertyDescription
 } from './interfaces';
-import { ItemDescPropValues, ItemsType, PricesPerYear } from './types';
+import { ItemsType, PricesPerYear } from './types';
 
 import { doReq } from './API';
 import {
@@ -37,33 +37,29 @@ const main = async () => {
   );
 
   if (itemPrice.data.success && itemPriceHistrory.data.success && itemTypeInfo.data.success) {
-    const lowestPrice: string | undefined = itemPrice.data.lowest_price;
+    const lowestPrice: string = itemPrice.data?.lowest_price || '';
     const averagePricePerYear: PricesPerYear = getAveragePricePerYear(itemPriceHistrory.data.prices);
     const itemInfo: IItemProperties =
       itemTypeInfo.data.assets[appid][2][Object.keys(itemTypeInfo.data.assets[appid][2])[0]];
     const itemType: ItemsType | void = getItemType(itemInfo);
     if (itemType) {
-      const items: ItemDescPropValues[] = findItemsInTreause(appid, itemType, itemInfo);
-      itemInfo.descriptions = items;
-      const getSubItems: (item: ItemDescPropValues) => Promise<ISubItem[]> = getSubItemsSetParams(appid, itemType);
-      const giveItemsPrice: (
-        item: IItemPropertyDescription
-      ) => Promise<IItemPropertyDescription> = giveItemsPriceSetParams(appid, country, currency);
-      const { results, errors } = await parallel<ItemDescPropValues, ISubItem>(itemInfo.descriptions, getSubItems, {
+      itemInfo.descriptions = findItemsInTreause(appid, itemType, itemInfo);
+      const getSubItems: (item: IItemPropertyDescription) => Promise<void> = getSubItemsSetParams(appid, itemType);
+      const giveItemsPrice: (item: IItemPropertyDescription) => Promise<void> = giveItemsPriceSetParams(
+        appid,
+        country,
+        currency
+      );
+
+      await parallel<IItemPropertyDescription, void>(itemInfo.descriptions, getSubItems, {
         streams: 3,
         timeout: 600
       });
-      itemInfo.descriptions.forEach(item => (item.subitems = results.filter(el => el.name.includes(item.value))));
-
-      console.log(JSON.stringify(itemInfo.descriptions));
-      console.log(JSON.stringify(results));
-      // for (let item of itemInfo.descriptions) {
-      //   item.subitems = await getSubItems(item);
-      //   await giveItemsPrice(item);
-      //   console.log(`[${counter++}/${itemInfo.descriptions.length}] - ${item.value}`);
-      //   await sleep(2000);
-      // }
-      // console.log(JSON.stringify(itemInfo));
+      await parallel<IItemPropertyDescription, void>(itemInfo.descriptions, giveItemsPrice, {
+        streams: 1,
+        timeout: 2750
+      });
+      console.log(itemInfo);
     }
   }
 };
