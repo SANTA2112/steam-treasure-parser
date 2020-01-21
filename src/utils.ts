@@ -83,7 +83,6 @@ const addStyles = (): void => {
       .select-stp {
         user-select: none;
         outline: none;
-        cursor: pointer;
         position: relative;
       }
       .select__arrow-stp {
@@ -112,6 +111,9 @@ const addStyles = (): void => {
       }
       .item__price-stp {
         color: #2fff00;
+      }
+      .select__label-stp {
+        cursor: pointer;
       }
     `;
   document.head.appendChild(elementsStyle);
@@ -338,5 +340,37 @@ export const giveItemsPriceSetParams = (
   }
   createItem(appid, pricePrefix, item);
   render(item);
+  addScripts();
+};
+
+export const renderAveragePricePerYear = (
+  pricePrefix: string,
+  priceSuffix: string,
+  prices: PricesPerYear,
+  itemNode: Element | null
+): void => {
+  const container: HTMLDivElement = document.createElement('div');
+
+  container.classList.add('select-stp');
+  container.innerHTML = `
+    <svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" class=""></path></svg>
+    <div class="select__label-stp" style="color: #ffffff">Prices per year</div>
+    <div class="select__options-stp">
+      ${Object.entries(prices)
+        .map(
+          ([year, price]) => `
+        <div class="item__container-stp">
+          <div
+            class="item-stp"
+            style="color: #ffffff"
+          >${year}: <span class="item__price-stp">${pricePrefix} ${price} ${priceSuffix}</span></div
+          >
+        </div>
+      `
+        )
+        .join('')}
+    </div>
+    `;
+  itemNode?.insertAdjacentElement('beforeend', container);
   addScripts();
 };
