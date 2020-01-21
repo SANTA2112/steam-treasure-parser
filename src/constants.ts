@@ -1,3 +1,5 @@
+import { options } from 'toastr';
+
 import { ICountryInfo } from './interfaces';
 import { ItemsType } from './types';
 import { Currency, Languages, CountryCode } from './enums';
@@ -173,3 +175,28 @@ export const ITEM_TYPE_URL = (
 ): string => `/listings/${appid}/${market_hash_name}/render/?start=0&count=1&language=${language}&currency=${currency}`;
 
 export const SUB_ITEMS_URL = 'https://steamcommunity.com/market/search?q=';
+
+const toastrOptions: typeof options = {
+  closeButton: true,
+  newestOnTop: false,
+  progressBar: true,
+  preventDuplicates: true,
+  showDuration: 300,
+  hideDuration: 1000,
+  timeOut: 2750,
+  extendedTimeOut: 1000,
+  showEasing: 'swing',
+  hideEasing: 'linear',
+  showMethod: 'fadeIn',
+  hideMethod: 'fadeOut'
+};
+
+export const toastrOptionsSuccess: typeof options = {
+  ...toastrOptions,
+  positionClass: 'toast-top-right'
+};
+
+export const toastrOptionsError: typeof options = {
+  ...toastrOptions,
+  positionClass: 'toast-bottom-left'
+};
