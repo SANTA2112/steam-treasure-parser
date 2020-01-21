@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, AxiosInstance } from 'axios';
+import toastr from 'toastr';
 
 import { IResponse, IPriceError } from './interfaces';
 
@@ -12,6 +13,7 @@ const config: AxiosRequestConfig = {
 const handleResponse = <T>(response: AxiosResponse<T>): AxiosResponse<T> => response;
 
 const handleError = (error: AxiosError): IResponse<IPriceError> => {
+  toastr.error(error.message);
   if (error.response) {
     console.log(error.response.data);
     console.log(error.response.status);

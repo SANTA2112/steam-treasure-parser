@@ -176,7 +176,7 @@ export const ITEM_TYPE_URL = (
 
 export const SUB_ITEMS_URL = 'https://steamcommunity.com/market/search?q=';
 
-const toastrOptions: typeof options = {
+export const toastrOptions: typeof options = {
   closeButton: true,
   newestOnTop: false,
   progressBar: true,

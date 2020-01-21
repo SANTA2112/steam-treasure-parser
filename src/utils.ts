@@ -1,3 +1,6 @@
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
+
 import { Currency, Languages, CountryCode } from './enums';
 import { Groups, ItemsType, PriceValues, PricesPerYear, PricesPerYearArr } from './types';
 import {
@@ -17,7 +20,9 @@ import {
 } from './interfaces';
 
 import { doReq } from './API';
-import { countryInfoArray, itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL } from './constants';
+import { countryInfoArray, itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL, toastrOptions } from './constants';
+
+toastr.options = toastrOptions;
 
 export const sleep = (ms: number): Promise<void> => new Promise(r => setTimeout(r, ms));
 
@@ -238,6 +243,7 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
 const addPriceForSubItemsSetParams = (appid: string, country: CountryCode, currency: Currency) => async (
   subItem: ISubItem
 ): Promise<void> => {
+  toastr.info(`Getting price for: ${subItem.name}`);
   const price: IPrice | IPriceError = await doReq(
     PRICE_OVERVIEW_URL(appid, country, currency, subItem.market_hash_name)
   ).then(r => r.data);
@@ -314,6 +320,7 @@ export const giveItemsPriceSetParams = (
   currency: Currency,
   pricePrefix: string
 ) => async (item: IItemPropertyDescription): Promise<void> => {
+  toastr.info(`Getting price for: ${item.value}`);
   if (item.subitems.length !== 0) {
     const addPriceForSubItems: (subItem: ISubItem) => Promise<void> = addPriceForSubItemsSetParams(
       appid,
