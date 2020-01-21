@@ -296,6 +296,13 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
   }
 };
 
+const render = (item: IItemPropertyDescription) => {
+  const htmlItem: HTMLDivElement = [
+    ...document.querySelectorAll('#largeiteminfo_item_descriptors .descriptor[style]')
+  ].find(el => el?.textContent?.startsWith(item.value)) as HTMLDivElement;
+  htmlItem?.parentElement?.replaceChild(item.domNode, htmlItem);
+};
+
 export const giveItemsPriceSetParams = (
   appid: string,
   country: CountryCode,
@@ -327,4 +334,5 @@ export const giveItemsPriceSetParams = (
     else item.price = '';
   }
   createItem(appid, pricePrefix, item);
+  render(item);
 };
