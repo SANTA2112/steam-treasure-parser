@@ -17,7 +17,7 @@ import {
 } from './interfaces';
 
 import { doReq } from './API';
-import { countryInfoArray, itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL } from './constants';
+import { countryInfoArray, itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL } from './constants';
 
 export const sleep = (ms: number): Promise<void> => new Promise(r => setTimeout(r, ms));
 
@@ -240,6 +240,61 @@ const addPriceForSubItemsSetParams = (appid: string, country: CountryCode, curre
   else subItem.price = '';
 };
 
+const createItem = (appid: string, pricePrefix: string, priceSuffix: string, item: IItemPropertyDescription): void => {
+  if (item.subitems.length !== 0) {
+    const container: HTMLDivElement = document.createElement('div');
+
+    container.classList.add('select-stp');
+    container.innerHTML = `
+    <svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" class=""></path></svg>
+    <div class="select__label-stp" style="color: #${item.color}">${item.value}</div>
+    <div class="select__options-stp">
+      ${item.subitems
+        .map(
+          el => `
+        <div class="item__container-stp">
+          <div class="item__image-container-stp">
+            <img
+              class="item__image-stp"
+              src="${el.img}"
+            />
+          </div>
+          <a
+            class="item-stp"
+            href="${BASE_URL}${appid}/${el.name}"
+            target="_blank"
+            style="color: #${item.color}"
+          >${el.name}<span class="item__price-stp">${pricePrefix} ${el.price} ${priceSuffix}</span></a
+          >
+        </div>
+      `
+        )
+        .join()}
+    </div>
+    `;
+    item.domNode = container;
+  } else {
+    const container: HTMLDivElement = document.createElement('div');
+
+    container.classList.add('item__container-stp');
+    container.innerHTML = `
+      <div class="item__image-container-stp">
+        <img
+          class="item__image-stp"
+          src="${item.img}"
+        />
+      </div>
+      <a
+        class="item-stp"
+        href="${BASE_URL}${appid}/${item.value}"
+        target="_blank"
+        style="color: #${item.color}"
+      >${item.value}<span class="item__price-stp">${pricePrefix} ${item.price} ${priceSuffix}</span></a
+      >
+    `;
+  }
+};
+
 export const giveItemsPriceSetParams = (
   appid: string,
   country: CountryCode,
@@ -271,4 +326,5 @@ export const giveItemsPriceSetParams = (
     if (price.success) item.price = price?.lowest_price || '';
     else item.price = '';
   }
+  createItem(appid, pricePrefix, priceSuffix, item);
 };
