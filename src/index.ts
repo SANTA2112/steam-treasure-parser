@@ -18,8 +18,8 @@ import {
   getItemType,
   getSubItemsSetParams,
   giveItemsPriceSetParams,
-  sleep,
-  parallel
+  parallel,
+  renderAveragePricePerYear
 } from './utils';
 import { PRICE_HISTIRY_URL, PRICE_OVERVIEW_URL, ITEM_TYPE_URL } from './constants';
 
@@ -36,13 +36,17 @@ const main = async () => {
     ITEM_TYPE_URL(appid, language, currency, market_hash_name)
   );
 
+  const itemNode: Element | null = document.querySelector('#largeiteminfo_item_name');
+
   if (itemPrice.data.success && itemPriceHistrory.data.success && itemTypeInfo.data.success) {
-    const { prices, price_prefix } = itemPriceHistrory.data;
+    const { prices, price_prefix, price_suffix } = itemPriceHistrory.data;
     const lowestPrice: string = `${price_prefix} ${itemPrice.data?.lowest_price}` || '';
     const averagePricePerYear: PricesPerYear = getAveragePricePerYear(prices);
     const itemInfo: IItemProperties =
       itemTypeInfo.data.assets[appid][2][Object.keys(itemTypeInfo.data.assets[appid][2])[0]];
     const itemType: ItemsType | void = getItemType(itemInfo);
+    itemNode?.insertAdjacentHTML('beforeend', `<div>Price: ${lowestPrice}</div>`);
+    renderAveragePricePerYear(price_prefix, price_suffix, averagePricePerYear, itemNode);
     if (itemType) {
       itemInfo.descriptions = findItemsInTreause(appid, itemType, itemInfo);
       const getSubItems: (item: IItemPropertyDescription) => Promise<ISubItem[]> = getSubItemsSetParams(
