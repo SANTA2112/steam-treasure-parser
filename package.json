@@ -11,7 +11,9 @@
   "author": "SANTA2112",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.1"
+    "@types/toastr": "^2.1.37",
+    "axios": "^0.19.1",
+    "toastr": "^2.1.4"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
