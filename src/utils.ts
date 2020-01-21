@@ -93,7 +93,7 @@ const addStyles = (): void => {
         width: 15px;
         height: 15px;
       }
-      .select.active-stp .select__arrow-stp {
+      .select.active .select__arrow-stp {
         transform: rotate(180deg);
       }
       .select__option-stp {
@@ -107,7 +107,7 @@ const addStyles = (): void => {
       .select__options-stp {
         display: none;
       }
-      .select.active-stp .select__options-stp {
+      .select.active .select__options-stp {
         display: block;
       }
     `;
@@ -121,7 +121,6 @@ const addScripts = (): void => {
 
 export const init = (): IInit => {
   addStyles();
-  addScripts();
   const parsedString: RegExpMatchArray = window.location.href.match(
     /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>.+)\/?/
   )!;
