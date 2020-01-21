@@ -260,7 +260,10 @@ export const giveItemsPriceSetParams = (
       await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data),
       'text/html'
     );
-    const market_hash_name: string = html.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '';
+    const itemHTMLNode: Element | null = html.querySelector('#searchResultsRows a');
+    const market_hash_name: string =
+      itemHTMLNode?.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '';
+    item.img = itemHTMLNode?.querySelector('img')?.src || '';
     const price: IPrice | IPriceError = await doReq(
       PRICE_OVERVIEW_URL(appid, country, currency, market_hash_name)
     ).then(r => r.data);

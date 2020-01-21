@@ -48,6 +48,8 @@ export interface IItemPropertyDescription {
   type?: string;
   subitems: ISubItem[];
   price: string;
+  domNode: HTMLDivElement;
+  img: string;
 }
 
 export interface IItemProperties {
