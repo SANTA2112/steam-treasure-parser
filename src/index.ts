@@ -37,8 +37,9 @@ const main = async () => {
   );
 
   if (itemPrice.data.success && itemPriceHistrory.data.success && itemTypeInfo.data.success) {
+    const { prices, price_prefix, price_suffix } = itemPriceHistrory.data;
     const lowestPrice: string = itemPrice.data?.lowest_price || '';
-    const averagePricePerYear: PricesPerYear = getAveragePricePerYear(itemPriceHistrory.data.prices);
+    const averagePricePerYear: PricesPerYear = getAveragePricePerYear(prices);
     const itemInfo: IItemProperties =
       itemTypeInfo.data.assets[appid][2][Object.keys(itemTypeInfo.data.assets[appid][2])[0]];
     const itemType: ItemsType | void = getItemType(itemInfo);
@@ -48,7 +49,9 @@ const main = async () => {
       const giveItemsPrice: (item: IItemPropertyDescription) => Promise<void> = giveItemsPriceSetParams(
         appid,
         country,
-        currency
+        currency,
+        price_prefix,
+        price_suffix
       );
 
       await parallel<IItemPropertyDescription, void>(itemInfo.descriptions, getSubItems, {

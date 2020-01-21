@@ -240,9 +240,13 @@ const addPriceForSubItemsSetParams = (appid: string, country: CountryCode, curre
   else subItem.price = '';
 };
 
-export const giveItemsPriceSetParams = (appid: string, country: CountryCode, currency: Currency) => async (
-  item: IItemPropertyDescription
-): Promise<void> => {
+export const giveItemsPriceSetParams = (
+  appid: string,
+  country: CountryCode,
+  currency: Currency,
+  pricePrefix: string,
+  priceSuffix: string
+) => async (item: IItemPropertyDescription): Promise<void> => {
   if (item.subitems.length !== 0) {
     const addPriceForSubItems: (subItem: ISubItem) => Promise<void> = addPriceForSubItemsSetParams(
       appid,
