@@ -188,15 +188,6 @@ const toastrOptions: typeof options = {
   showEasing: 'swing',
   hideEasing: 'linear',
   showMethod: 'fadeIn',
-  hideMethod: 'fadeOut'
-};
-
-export const toastrOptionsSuccess: typeof options = {
-  ...toastrOptions,
-  positionClass: 'toast-top-right'
-};
-
-export const toastrOptionsError: typeof options = {
-  ...toastrOptions,
+  hideMethod: 'fadeOut',
   positionClass: 'toast-bottom-left'
 };
