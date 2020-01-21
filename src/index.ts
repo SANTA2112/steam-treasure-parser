@@ -50,8 +50,7 @@ const main = async () => {
         appid,
         country,
         currency,
-        price_prefix,
-        price_suffix
+        price_prefix
       );
 
       await parallel<IItemPropertyDescription, void>(itemInfo.descriptions, getSubItems, {
@@ -62,7 +61,6 @@ const main = async () => {
         streams: 1,
         timeout: 2750
       });
-      console.log(itemInfo);
     }
   }
 };

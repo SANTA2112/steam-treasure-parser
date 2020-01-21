@@ -240,7 +240,7 @@ const addPriceForSubItemsSetParams = (appid: string, country: CountryCode, curre
   else subItem.price = '';
 };
 
-const createItem = (appid: string, pricePrefix: string, priceSuffix: string, item: IItemPropertyDescription): void => {
+const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescription): void => {
   if (item.subitems.length !== 0) {
     const container: HTMLDivElement = document.createElement('div');
 
@@ -261,10 +261,10 @@ const createItem = (appid: string, pricePrefix: string, priceSuffix: string, ite
           </div>
           <a
             class="item-stp"
-            href="${BASE_URL}${appid}/${el.name}"
+            href="${BASE_URL}/listings/${appid}/${el.name}"
             target="_blank"
             style="color: #${item.color}"
-          >${el.name}<span class="item__price-stp">${pricePrefix} ${el.price} ${priceSuffix}</span></a
+          >${el.name}<span class="item__price-stp">${pricePrefix} ${el.price}</span></a
           >
         </div>
       `
@@ -286,12 +286,13 @@ const createItem = (appid: string, pricePrefix: string, priceSuffix: string, ite
       </div>
       <a
         class="item-stp"
-        href="${BASE_URL}${appid}/${item.value}"
+        href="${BASE_URL}/listings/${appid}/${item.value}"
         target="_blank"
         style="color: #${item.color}"
-      >${item.value}<span class="item__price-stp">${pricePrefix} ${item.price} ${priceSuffix}</span></a
+      >${item.value}<span class="item__price-stp">${pricePrefix} ${item.price}</span></a
       >
     `;
+    item.domNode = container;
   }
 };
 
@@ -299,8 +300,7 @@ export const giveItemsPriceSetParams = (
   appid: string,
   country: CountryCode,
   currency: Currency,
-  pricePrefix: string,
-  priceSuffix: string
+  pricePrefix: string
 ) => async (item: IItemPropertyDescription): Promise<void> => {
   if (item.subitems.length !== 0) {
     const addPriceForSubItems: (subItem: ISubItem) => Promise<void> = addPriceForSubItemsSetParams(
@@ -326,5 +326,5 @@ export const giveItemsPriceSetParams = (
     if (price.success) item.price = price?.lowest_price || '';
     else item.price = '';
   }
-  createItem(appid, pricePrefix, priceSuffix, item);
+  createItem(appid, pricePrefix, item);
 };
