@@ -1,7 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -28,19 +26,8 @@ module.exports = {
     ]
   },
   devtool: process.env.MODE === 'production' ? 'none' : 'inline-sourse-map',
-  devServer: {
-    open: true,
-    port: 27060
-  },
   resolve: {
     extensions: ['.ts', '.js']
   },
-  plugins: [
-    new webpack.ProgressPlugin(),
-    // new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: './public/index.html'
-    })
-  ]
+  plugins: [new webpack.ProgressPlugin()]
 };
