@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -29,5 +30,5 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js']
   },
-  plugins: [new webpack.ProgressPlugin()]
+  plugins: [new webpack.ProgressPlugin(), new CopyPlugin([{ from: 'public', to: '' }])]
 };
