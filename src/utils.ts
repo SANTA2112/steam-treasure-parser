@@ -20,9 +20,7 @@ import {
 } from './interfaces';
 
 import { doReq } from './API';
-import { countryInfoArray, itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL, toastrOptions } from './constants';
-
-toastr.options = toastrOptions;
+import { countryInfoArray, itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL } from './constants';
 
 export const sleep = (ms: number): Promise<void> => new Promise(r => setTimeout(r, ms));
 

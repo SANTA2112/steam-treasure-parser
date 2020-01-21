@@ -1,3 +1,5 @@
+import toastr from 'toastr';
+
 import {
   IPrice,
   IPriceHistory,
@@ -21,7 +23,9 @@ import {
   parallel,
   renderAveragePricePerYear
 } from './utils';
-import { PRICE_HISTIRY_URL, PRICE_OVERVIEW_URL, ITEM_TYPE_URL } from './constants';
+import { PRICE_HISTIRY_URL, PRICE_OVERVIEW_URL, ITEM_TYPE_URL, toastrOptions } from './constants';
+
+toastr.options = toastrOptions;
 
 const main = async () => {
   const { appid, currency, market_hash_name, language, country } = init();
@@ -59,7 +63,7 @@ const main = async () => {
         currency,
         price_prefix
       );
-
+      toastr.info('Getting SubItems');
       await parallel<IItemPropertyDescription, ISubItem[]>(itemInfo.descriptions, getSubItems, {
         streams: 3,
         timeout: 600
