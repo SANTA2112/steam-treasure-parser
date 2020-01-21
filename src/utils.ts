@@ -61,7 +61,67 @@ export const parallel = async <T, R>(
 const getUserICookie = (): Partial<ICookie> =>
   document.cookie.split('; ').reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {});
 
+const addStyles = (): void => {
+  const elementsStyle: HTMLStyleElement = document.createElement('style');
+  elementsStyle.innerHTML = `
+      .item__container-stp {
+        position: relative;
+      }
+      .item__container-stp:hover .item__image-container-stp {
+        display: block;
+      }
+      .item__image-container-stp {
+        display: none;
+        position: absolute;
+        top: -50px;
+        right: 0;
+        transform: translate(10%, 0%);
+      }
+      .item__image-stp {
+        height: 6rem;
+      }
+      .select-stp {
+        user-select: none;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+      }
+      .select__arrow-stp {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 15px;
+        height: 15px;
+      }
+      .select.active-stp .select__arrow-stp {
+        transform: rotate(180deg);
+      }
+      .select__option-stp {
+        opacity: .6;
+        transition: opacity .1s;
+        will-change: opacity;
+      }
+      .select__option-stp:hover {
+        opacity: 1;
+      }
+      .select__options-stp {
+        display: none;
+      }
+      .select.active-stp .select__options-stp {
+        display: block;
+      }
+    `;
+  document.head.appendChild(elementsStyle);
+};
+
+const addScripts = (): void => {
+  const selects: HTMLDivElement[] = [...document.querySelectorAll('.select-stp')] as HTMLDivElement[];
+  selects.forEach(select => (select.onclick = () => select.classList.toggle('active')));
+};
+
 export const init = (): IInit => {
+  addStyles();
+  addScripts();
   const parsedString: RegExpMatchArray = window.location.href.match(
     /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>.+)\/?/
   )!;
