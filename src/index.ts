@@ -37,15 +37,18 @@ const main = async () => {
   );
 
   if (itemPrice.data.success && itemPriceHistrory.data.success && itemTypeInfo.data.success) {
-    const { prices, price_prefix, price_suffix } = itemPriceHistrory.data;
-    const lowestPrice: string = itemPrice.data?.lowest_price || '';
+    const { prices, price_prefix } = itemPriceHistrory.data;
+    const lowestPrice: string = `${price_prefix} ${itemPrice.data?.lowest_price}` || '';
     const averagePricePerYear: PricesPerYear = getAveragePricePerYear(prices);
     const itemInfo: IItemProperties =
       itemTypeInfo.data.assets[appid][2][Object.keys(itemTypeInfo.data.assets[appid][2])[0]];
     const itemType: ItemsType | void = getItemType(itemInfo);
     if (itemType) {
       itemInfo.descriptions = findItemsInTreause(appid, itemType, itemInfo);
-      const getSubItems: (item: IItemPropertyDescription) => Promise<void> = getSubItemsSetParams(appid, itemType);
+      const getSubItems: (item: IItemPropertyDescription) => Promise<ISubItem[]> = getSubItemsSetParams(
+        appid,
+        itemType
+      );
       const giveItemsPrice: (item: IItemPropertyDescription) => Promise<void> = giveItemsPriceSetParams(
         appid,
         country,
@@ -53,7 +56,7 @@ const main = async () => {
         price_prefix
       );
 
-      await parallel<IItemPropertyDescription, void>(itemInfo.descriptions, getSubItems, {
+      await parallel<IItemPropertyDescription, ISubItem[]>(itemInfo.descriptions, getSubItems, {
         streams: 3,
         timeout: 600
       });

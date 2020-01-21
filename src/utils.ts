@@ -93,7 +93,7 @@ const addStyles = (): void => {
         width: 15px;
         height: 15px;
       }
-      .select.active .select__arrow-stp {
+      .select-stp.active .select__arrow-stp {
         transform: rotate(180deg);
       }
       .select__option-stp {
@@ -107,8 +107,11 @@ const addStyles = (): void => {
       .select__options-stp {
         display: none;
       }
-      .select.active .select__options-stp {
+      .select-stp.active .select__options-stp {
         display: block;
+      }
+      .item__price-stp {
+        color: #2fff00;
       }
     `;
   document.head.appendChild(elementsStyle);
@@ -197,7 +200,7 @@ export const findItemsInTreause = (
 
 export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => async (
   item: IItemPropertyDescription
-): Promise<void> => {
+): Promise<ISubItem[]> => {
   const parser: DOMParser = new DOMParser();
   switch (appid) {
     case '730': {
@@ -209,7 +212,7 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
             await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data),
             'text/html'
           );
-          item.subitems = [...html.querySelectorAll('#searchResultsRows a')]
+          return (item.subitems = [...html.querySelectorAll('#searchResultsRows a')]
             .map(el => ({
               name:
                 treasureType !== 'souvenir package'
@@ -221,13 +224,13 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
               market_hash_name: el.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '',
               img: el.querySelector('img')?.src || ''
             }))
-            .filter(el => el.name);
+            .filter(el => el.name));
         }
         case 'capsule':
       }
     }
   }
-  item.subitems = [];
+  return (item.subitems = []);
 };
 
 const addPriceForSubItemsSetParams = (appid: string, country: CountryCode, currency: Currency) => async (
@@ -261,7 +264,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
           </div>
           <a
             class="item-stp"
-            href="${BASE_URL}/listings/${appid}/${el.name}"
+            href="${BASE_URL}/listings/${appid}/${el.market_hash_name}"
             target="_blank"
             style="color: #${item.color}"
           >${el.name}<span class="item__price-stp">${pricePrefix} ${el.price}</span></a
@@ -269,7 +272,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
         </div>
       `
         )
-        .join()}
+        .join('')}
     </div>
     `;
     item.domNode = container;
@@ -335,4 +338,5 @@ export const giveItemsPriceSetParams = (
   }
   createItem(appid, pricePrefix, item);
   render(item);
+  addScripts();
 };
