@@ -209,15 +209,34 @@ export const findItemsInTreause = (
         }
       }
     }
+    case '218620': {
+      switch (treasureType) {
+        case 'safe':
+          return [...new DOMParser().parseFromString(items.descriptions[0].value, 'text/html').querySelectorAll('span')]
+            .map(el => ({
+              value: el.textContent?.trim() || '',
+              color: el.getAttribute('style')?.split(' ')[1] || undefined,
+              subitems: [],
+              price: '',
+              domNode: document.createElement('div'),
+              img: ''
+            }))
+            .filter(
+              el =>
+                ['#2360D8', '#9900FF', '#FF00FF', '#FF0000', '#FFAA00'].includes(('color' in el && el.color) || '') &&
+                el.value.includes(' | ')
+            );
+      }
+    }
   }
   return [];
 };
 
 const findSubItemsInHTML = async (
   itemName: string,
+  treasureType: ItemsType,
   itemColor1: string,
-  itemColor2: string,
-  treasureType: ItemsType
+  itemColor2?: string
 ): Promise<ISubItem[]> => {
   const parser: DOMParser = new DOMParser();
   const html: Document = parser.parseFromString(
@@ -229,8 +248,8 @@ const findSubItemsInHTML = async (
       const name =
         treasureType !== 'souvenir package'
           ? (
-              el.querySelector(`span[style="color: ${itemColor1};"]`) ||
-              el.querySelector(`span[style="color: ${itemColor2};"]`)
+              (itemColor2 && el.querySelector(`span[style="color: ${itemColor2};"]`)) ||
+              el.querySelector(`span[style="color: ${itemColor1};"]`)
             )?.textContent
           : el.querySelector('span[style="color: #FFD700;"]')?.textContent;
       return {
@@ -251,7 +270,7 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
         case 'case':
         case 'container':
         case 'souvenir package':
-          return (item.subitems = await findSubItemsInHTML(item.value, '#D2D2D2', '#CF6A32', treasureType));
+          return (item.subitems = await findSubItemsInHTML(item.value, treasureType, '#D2D2D2', '#CF6A32'));
         case 'capsule':
       }
     }
@@ -259,7 +278,13 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
       switch (treasureType) {
         case 'case':
         case 'crate':
-          return (item.subitems = await findSubItemsInHTML(item.value, '#FAFAFA', '#CF6A32', treasureType));
+          return (item.subitems = await findSubItemsInHTML(item.value, treasureType, '#FAFAFA', '#CF6A32'));
+      }
+    }
+    case '218620': {
+      switch (treasureType) {
+        case 'safe':
+          return (item.subitems = await findSubItemsInHTML(item.value, treasureType, item?.color || '#D2D2D2'));
       }
     }
   }
@@ -284,7 +309,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
     container.classList.add('select-stp');
     container.innerHTML = `
     <svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" class=""></path></svg>
-    <div class="select__label-stp" style="color: #${item.color}">${item.value}</div>
+    <div class="select__label-stp" style="color: #${item.color?.replace('#', '')}">${item.value}</div>
     <div class="select__options-stp">
       ${item.subitems
         .map(
@@ -300,7 +325,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
             class="item-stp"
             href="${BASE_URL}/listings/${appid}/${el.market_hash_name}"
             target="_blank"
-            style="color: #${item.color}"
+            style="color: #${item.color?.replace('#', '')}"
           >${el.name}<span class="item__price-stp">${pricePrefix} ${el.price}</span></a
           >
         </div>
@@ -325,7 +350,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
         class="item-stp"
         href="${BASE_URL}/listings/${appid}/${item.value}"
         target="_blank"
-        style="color: #${item.color}"
+        style="color: #${item.color?.replace('#', '')}"
       >${item.value}<span class="item__price-stp">${pricePrefix} ${item.price}</span></a
       >
     `;
@@ -334,9 +359,13 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
 };
 
 const render = (item: IItemPropertyDescription) => {
-  const htmlItem: HTMLDivElement = [
-    ...document.querySelectorAll('#largeiteminfo_item_descriptors .descriptor[style]')
-  ].find(el => el?.textContent?.startsWith(item.value.trim())) as HTMLDivElement;
+  let htmlItems: Element[] = [...document.querySelectorAll('#largeiteminfo_item_descriptors .descriptor[style]')];
+  if (htmlItems.length === 0) {
+    htmlItems = [...document.querySelectorAll('#largeiteminfo_item_descriptors span[style]')];
+  }
+  const htmlItem: HTMLDivElement = htmlItems.find(el =>
+    el?.textContent?.startsWith(item.value.trim())
+  ) as HTMLDivElement;
   htmlItem?.parentElement?.replaceChild(item.domNode, htmlItem);
 };
 
