@@ -215,7 +215,11 @@ export const findItemsInTreause = (
           return [...new DOMParser().parseFromString(items.descriptions[0].value, 'text/html').querySelectorAll('span')]
             .map(el => ({
               value: el.textContent?.trim() || '',
-              color: el.getAttribute('style')?.split(' ')[1] || undefined,
+              color:
+                el
+                  .getAttribute('style')
+                  ?.split(' ')[1]
+                  .replace('#', '') || undefined,
               subitems: [],
               price: '',
               domNode: document.createElement('div'),
@@ -223,7 +227,7 @@ export const findItemsInTreause = (
             }))
             .filter(
               el =>
-                ['#2360D8', '#9900FF', '#FF00FF', '#FF0000', '#FFAA00'].includes(('color' in el && el.color) || '') &&
+                ['2360D8', '9900FF', 'FF00FF', 'FF0000', 'FFAA00'].includes(('color' in el && el.color) || '') &&
                 el.value.includes(' | ')
             );
       }
@@ -284,7 +288,7 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
     case '218620': {
       switch (treasureType) {
         case 'safe':
-          return (item.subitems = await findSubItemsInHTML(item.value, treasureType, item?.color || '#D2D2D2'));
+          return (item.subitems = await findSubItemsInHTML(item.value, treasureType, `#${item?.color}`));
       }
     }
   }
@@ -309,7 +313,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
     container.classList.add('select-stp');
     container.innerHTML = `
     <svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" class=""></path></svg>
-    <div class="select__label-stp" style="color: #${item.color?.replace('#', '')}">${item.value}</div>
+    <div class="select__label-stp" style="color: #${item.color}">${item.value}</div>
     <div class="select__options-stp">
       ${item.subitems
         .map(
@@ -325,7 +329,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
             class="item-stp"
             href="${BASE_URL}/listings/${appid}/${el.market_hash_name}"
             target="_blank"
-            style="color: #${item.color?.replace('#', '')}"
+            style="color: #${item.color}"
           >${el.name}<span class="item__price-stp">${pricePrefix} ${el.price}</span></a
           >
         </div>
@@ -350,7 +354,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
         class="item-stp"
         href="${BASE_URL}/listings/${appid}/${item.value}"
         target="_blank"
-        style="color: #${item.color?.replace('#', '')}"
+        style="color: #${item.color}"
       >${item.value}<span class="item__price-stp">${pricePrefix} ${item.price}</span></a
       >
     `;
