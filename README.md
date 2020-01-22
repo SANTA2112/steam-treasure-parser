@@ -1,7 +1,7 @@
 ## steam-treasure-parser
 
-[Download link .zip](https://yadi.sk/d/ERJ9gRW0QXBBCg)
-[Download link .crx](https://yadi.sk/d/y3SsylzhmbN6GA)
+[Download link .zip](https://yadi.sk/d/Qo9NnjSw_55IOg)
+[Download link .crx](https://yadi.sk/d/7HmAkY8r7KnURA)
 
 ### Run development mode
 
