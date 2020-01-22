@@ -147,7 +147,7 @@ export const countryInfoArray: ICountryInfo[] = [
   }
 ];
 
-export const itemTypes: ItemsType[] = ['souvenir package', 'capsule', 'container', 'case', 'treasure', 'crate'];
+export const itemTypes: ItemsType[] = ['souvenir package', 'capsule', 'container', 'case', 'treasure', 'crate', 'safe'];
 
 export const BASE_URL: string = 'https://steamcommunity.com/market';
 
