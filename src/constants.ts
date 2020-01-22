@@ -147,7 +147,7 @@ export const countryInfoArray: ICountryInfo[] = [
   }
 ];
 
-export const itemTypes: ItemsType[] = ['souvenir package', 'capsule', 'container', 'case', 'treasure'];
+export const itemTypes: ItemsType[] = ['souvenir package', 'capsule', 'container', 'case', 'treasure', 'crate'];
 
 export const BASE_URL: string = 'https://steamcommunity.com/market';
 
@@ -183,7 +183,7 @@ export const toastrOptions: typeof options = {
   preventDuplicates: true,
   showDuration: 300,
   hideDuration: 1000,
-  timeOut: 2750,
+  timeOut: 3000,
   extendedTimeOut: 1000,
   showEasing: 'swing',
   hideEasing: 'linear',

@@ -184,7 +184,6 @@ export const findItemsInTreause = (
           );
         }
       }
-      break;
     }
     case '730': {
       switch (treasureType) {
@@ -197,7 +196,18 @@ export const findItemsInTreause = (
           );
         }
       }
-      break;
+    }
+    case '440': {
+      switch (treasureType) {
+        case 'case':
+        case 'crate': {
+          return items.descriptions.filter(el =>
+            ['6f6a63', 'b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(
+              ('color' in el && el.color) || ''
+            )
+          );
+        }
+      }
     }
   }
   return [];
@@ -243,6 +253,13 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
         case 'souvenir package':
           return (item.subitems = await findSubItemsInHTML(item.value, '#D2D2D2', '#CF6A32', treasureType));
         case 'capsule':
+      }
+    }
+    case '440': {
+      switch (treasureType) {
+        case 'case':
+        case 'crate':
+          return (item.subitems = await findSubItemsInHTML(item.value, '#FAFAFA', '#CF6A32', treasureType));
       }
     }
   }
@@ -319,7 +336,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
 const render = (item: IItemPropertyDescription) => {
   const htmlItem: HTMLDivElement = [
     ...document.querySelectorAll('#largeiteminfo_item_descriptors .descriptor[style]')
-  ].find(el => el?.textContent?.startsWith(item.value)) as HTMLDivElement;
+  ].find(el => el?.textContent?.startsWith(item.value.trim())) as HTMLDivElement;
   htmlItem?.parentElement?.replaceChild(item.domNode, htmlItem);
 };
 
