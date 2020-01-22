@@ -203,34 +203,45 @@ export const findItemsInTreause = (
   return [];
 };
 
+const findSubItemsInHTML = async (
+  itemName: string,
+  itemColor1: string,
+  itemColor2: string,
+  treasureType: ItemsType
+): Promise<ISubItem[]> => {
+  const parser: DOMParser = new DOMParser();
+  const html: Document = parser.parseFromString(
+    await doReq(`${SUB_ITEMS_URL}${itemName}`).then(r => r.data),
+    'text/html'
+  );
+  return [...html.querySelectorAll('#searchResultsRows a')]
+    .map(el => {
+      const name =
+        treasureType !== 'souvenir package'
+          ? (
+              el.querySelector(`span[style="color: ${itemColor1};"]`) ||
+              el.querySelector(`span[style="color: ${itemColor2};"]`)
+            )?.textContent
+          : el.querySelector('span[style="color: #FFD700;"]')?.textContent;
+      return {
+        name: name?.includes(itemName) ? name : '',
+        market_hash_name: el.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '',
+        img: el.querySelector('img')?.src || ''
+      };
+    })
+    .filter(el => el.name);
+};
+
 export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => async (
   item: IItemPropertyDescription
 ): Promise<ISubItem[]> => {
-  const parser: DOMParser = new DOMParser();
   switch (appid) {
     case '730': {
       switch (treasureType) {
         case 'case':
         case 'container':
-        case 'souvenir package': {
-          const html: Document = parser.parseFromString(
-            await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data),
-            'text/html'
-          );
-          return (item.subitems = [...html.querySelectorAll('#searchResultsRows a')]
-            .map(el => ({
-              name:
-                treasureType !== 'souvenir package'
-                  ? (
-                      el.querySelector('span[style="color: #D2D2D2;"]') ||
-                      el.querySelector('span[style="color: #CF6A32;"]')
-                    )?.textContent || ''
-                  : el.querySelector('span[style="color: #FFD700;"]')?.textContent || '',
-              market_hash_name: el.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '',
-              img: el.querySelector('img')?.src || ''
-            }))
-            .filter(el => el.name));
-        }
+        case 'souvenir package':
+          return (item.subitems = await findSubItemsInHTML(item.value, '#D2D2D2', '#CF6A32', treasureType));
         case 'capsule':
       }
     }
@@ -325,7 +336,7 @@ export const giveItemsPriceSetParams = (
       country,
       currency
     );
-    await parallel<ISubItem, void>(item.subitems, addPriceForSubItems, { streams: 1, timeout: 2750 });
+    await parallel<ISubItem, void>(item.subitems, addPriceForSubItems, { streams: 1, timeout: 3000 });
   } else {
     const parser: DOMParser = new DOMParser();
     const html: Document = parser.parseFromString(

@@ -70,7 +70,7 @@ const main = async () => {
       });
       await parallel<IItemPropertyDescription, void>(itemInfo.descriptions, giveItemsPrice, {
         streams: 1,
-        timeout: 2750
+        timeout: 3000
       });
     }
   }
