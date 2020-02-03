@@ -50,6 +50,7 @@ export interface IItemPropertyDescription {
   price: string;
   domNode: HTMLDivElement;
   img: string;
+  market_hash_name: string;
 }
 
 export interface IItemProperties {

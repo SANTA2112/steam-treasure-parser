@@ -132,6 +132,7 @@ export const findItemsInTreause = (
         case 'case':
         case 'container':
         case 'souvenir package':
+        case 'holo-foil':
         case 'capsule': {
           return items.descriptions.filter(el =>
             ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(('color' in el && el.color) || '')
@@ -165,7 +166,8 @@ export const findItemsInTreause = (
               subitems: [],
               price: '',
               domNode: document.createElement('div'),
-              img: ''
+              img: '',
+              market_hash_name: ''
             }))
             .filter(
               el =>
@@ -294,7 +296,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
       </div>
       <a
         class="item-stp"
-        href="${BASE_URL}/listings/${appid}/${item.value}"
+        href="${BASE_URL}/listings/${appid}/${item.market_hash_name}"
         target="_blank"
         style="color: #${item.color}"
       >${item.value}<span class="item__price-stp">${pricePrefix} ${item.price}</span></a
@@ -305,10 +307,9 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
 };
 
 const render = (item: IItemPropertyDescription) => {
-  let htmlItems: Element[] = [...document.querySelectorAll('#largeiteminfo_item_descriptors .descriptor[style]')];
-  if (htmlItems.length === 0) {
-    htmlItems = [...document.querySelectorAll('#largeiteminfo_item_descriptors span[style]')];
-  }
+  const divItems: Element[] = [...document.querySelectorAll('#largeiteminfo_item_descriptors .descriptor[style]')];
+  const spanItems: Element[] = [...document.querySelectorAll('#largeiteminfo_item_descriptors span[style]')];
+  const htmlItems: Element[] = divItems.length !== 0 ? divItems : spanItems.length !== 0 ? spanItems : [];
   const htmlItem: HTMLDivElement = htmlItems.find(el =>
     el?.textContent?.startsWith(item.value.trim())
   ) as HTMLDivElement;
@@ -339,6 +340,8 @@ export const giveItemsPriceSetParams = (
     const market_hash_name: string =
       itemHTMLNode?.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '';
     item.img = itemHTMLNode?.querySelector('img')?.src || '';
+    item.market_hash_name = market_hash_name;
+
     const price: IPrice | IPriceError = await doReq(
       PRICE_OVERVIEW_URL(appid, country, currency, market_hash_name)
     ).then(r => r.data);
