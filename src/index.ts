@@ -44,7 +44,7 @@ const main = async () => {
 
   if (itemPrice.data.success && itemPriceHistrory.data.success && itemTypeInfo.data.success) {
     const { prices, price_prefix, price_suffix } = itemPriceHistrory.data;
-    const lowestPrice: string = `${price_prefix} ${itemPrice.data?.lowest_price}` || '';
+    const lowestPrice: string = `${itemPrice.data?.lowest_price || itemPrice.data?.median_price || ''}`;
     const averagePricePerYear: PricesPerYear = getAveragePricePerYear(prices);
     const itemInfo: IItemProperties =
       itemTypeInfo.data.assets[appid][2][Object.keys(itemTypeInfo.data.assets[appid][2])[0]];
