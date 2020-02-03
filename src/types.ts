@@ -12,4 +12,12 @@ export type PricesPerYear = {
 
 export type PriceValues = [string, number, string][];
 
-export type ItemsType = 'case' | 'treasure' | 'container' | 'souvenir package' | 'capsule' | 'crate' | 'safe';
+export type ItemsType =
+  | 'case'
+  | 'treasure'
+  | 'container'
+  | 'souvenir package'
+  | 'capsule'
+  | 'crate'
+  | 'safe'
+  | 'holo-foil';
