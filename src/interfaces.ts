@@ -66,7 +66,7 @@ export interface IItemTypeResponce {
   success: boolean;
   assets: {
     [key: string]: {
-      '2': {
+      [key: string]: {
         [key: string]: IItemProperties;
       };
     };

@@ -47,7 +47,9 @@ const main = async () => {
     const lowestPrice: string = `${itemPrice.data?.lowest_price || itemPrice.data?.median_price || ''}`;
     const averagePricePerYear: PricesPerYear = getAveragePricePerYear(prices);
     const itemInfo: IItemProperties =
-      itemTypeInfo.data.assets[appid][2][Object.keys(itemTypeInfo.data.assets[appid][2])[0]];
+      itemTypeInfo.data.assets[appid][Object.keys(itemTypeInfo.data.assets[appid])[0]][
+        Object.keys(itemTypeInfo.data.assets[appid][2])[0]
+      ];
     const itemType: ItemsType | void = getItemType(itemInfo);
     itemNode?.insertAdjacentHTML('beforeend', `<div>Price: ${lowestPrice}</div>`);
     renderAveragePricePerYear(price_prefix, price_suffix, averagePricePerYear, itemNode);
