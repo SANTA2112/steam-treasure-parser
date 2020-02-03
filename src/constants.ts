@@ -155,7 +155,8 @@ export const itemTypes: ItemsType[] = [
   'treasure',
   'crate',
   'safe',
-  'holo-foil'
+  'holo-foil',
+  'trove carafe'
 ];
 
 export const BASE_URL: string = 'https://steamcommunity.com/market';

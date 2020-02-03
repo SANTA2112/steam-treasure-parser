@@ -114,6 +114,7 @@ export const findItemsInTreause = (
   switch (appid) {
     case '570': {
       switch (treasureType) {
+        case 'trove carafe':
         case 'treasure': {
           return items.descriptions.filter(
             el =>

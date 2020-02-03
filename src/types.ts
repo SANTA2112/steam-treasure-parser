@@ -15,6 +15,7 @@ export type PriceValues = [string, number, string][];
 export type ItemsType =
   | 'case'
   | 'treasure'
+  | 'trove carafe'
   | 'container'
   | 'souvenir package'
   | 'capsule'
