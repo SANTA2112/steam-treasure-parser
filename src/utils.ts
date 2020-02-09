@@ -72,7 +72,7 @@ const addScripts = (): void => {
 
 export const init = (): IInit => {
   const parsedString: RegExpMatchArray = window.location.href.match(
-    /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>[\w\%\-\.]+)/
+    /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>[\w\%\-\.\']+)/
   )!;
   const { appid, market_hash_name } = parsedString.groups as Groups;
   const userLangInfo: IUserLangInfo = {
