@@ -16,17 +16,17 @@
   "author": "SANTA2112 <s.yushmanov777@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "toastr": "^2.1.4"
   },
   "devDependencies": {
     "@types/toastr": "^2.1.38",
-    "copy-webpack-plugin": "^5.1.1",
-    "css-loader": "^3.6.0",
-    "style-loader": "^1.2.1",
-    "ts-loader": "^6.2.2",
-    "typescript": "^3.9.7",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "copy-webpack-plugin": "^7.0.0",
+    "css-loader": "^5.0.1",
+    "style-loader": "^2.0.0",
+    "ts-loader": "^8.0.14",
+    "typescript": "^4.1.3",
+    "webpack": "^5.15.0",
+    "webpack-cli": "^4.3.1"
   }
 }
