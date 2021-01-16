@@ -3,7 +3,7 @@ import 'toastr/build/toastr.min.css';
 import './_assets/css/style.css';
 
 import { Currency, Languages, CountryCode } from './enums';
-import { Groups, ItemsType, PriceValues, PricesPerYear, PricesPerYearArr } from './types';
+import { Groups, ItemsType, PriceValues, PricesPerYear, PricesPerYearArr, TMonths, TQuantityOfSales } from './types';
 import {
   ICookie,
   IInit,
@@ -17,13 +17,13 @@ import {
   IFetchError,
   IOptions,
   IUserLangInfo,
-  ICountryInfo
+  ICountryInfo,
 } from './interfaces';
 
 import { doReq } from './API';
-import { countryInfoArray, itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL } from './constants';
+import { countryInfoArray, itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL, months } from './constants';
 
-export const sleep = (ms: number): Promise<void> => new Promise(r => setTimeout(r, ms));
+export const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
 export const parallel = async <T, R>(
   /** Массив со входными данными */
@@ -37,18 +37,18 @@ export const parallel = async <T, R>(
   const errors: IFetchError<T>[] = [];
   const tasks: Promise<any>[] = [];
 
-  const wait = (ms: number): Promise<void> => new Promise(r => setTimeout(r, ms));
+  const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
   const run = async (): Promise<any> => {
     if (source.length === 0) return;
     const current = source.shift() as T;
 
     return fetcher(current)
-      .then(result => {
+      .then((result) => {
         Array.isArray(result) ? results.push(...result) : results.push(result);
       })
       .catch((err: Error) => errors.push({ src: current, message: err.message }))
-      .then(_ => wait(timeout))
+      .then((_) => wait(timeout))
       .then(run);
   };
 
@@ -58,7 +58,7 @@ export const parallel = async <T, R>(
 
   return {
     results,
-    errors
+    errors,
   };
 };
 
@@ -67,7 +67,7 @@ const getUserICookie = (): Partial<ICookie> =>
 
 const addScripts = (): void => {
   const selects: HTMLDivElement[] = [...document.querySelectorAll('.select-stp')] as HTMLDivElement[];
-  selects.forEach(select => (select.onclick = () => select.classList.toggle('active')));
+  selects.forEach((select) => (select.onclick = () => select.classList.toggle('active')));
 };
 
 export const init = (): IInit => {
@@ -77,10 +77,10 @@ export const init = (): IInit => {
   const { appid, market_hash_name } = parsedString.groups as Groups;
   const userLangInfo: IUserLangInfo = {
     language: getUserICookie().Steam_Language,
-    countryCode: decodeURIComponent(getUserICookie().steamCountry || '').split('|')[0] || CountryCode.EN
+    countryCode: decodeURIComponent(getUserICookie().steamCountry || '').split('|')[0] || CountryCode.EN,
   };
-  let countryInfo: ICountryInfo | undefined = countryInfoArray.find(el => el.language === userLangInfo.language);
-  if (!countryInfo) countryInfo = countryInfoArray.find(el => el.countryCode === userLangInfo.countryCode);
+  let countryInfo: ICountryInfo | undefined = countryInfoArray.find((el) => el.language === userLangInfo.language);
+  if (!countryInfo) countryInfo = countryInfoArray.find((el) => el.countryCode === userLangInfo.countryCode);
 
   const language: Languages = countryInfo?.language || Languages.english;
   const country: CountryCode = countryInfo?.countryCode || CountryCode.EN;
@@ -96,7 +96,7 @@ export const getAveragePricePerYear = (prices: PriceValues): PricesPerYear => {
   const avgPricesPerYear = Object.entries(objectWithArrayOfPricesByYear).reduce(
     (acc, [year, values]) => ({
       ...acc,
-      [year]: values.reduce((a, c, i, arr) => (i !== arr.length - 1 ? a + c : +((a + c) / arr.length).toFixed(2)), 0)
+      [year]: values.reduce((a, c, i, arr) => (i !== arr.length - 1 ? a + c : +((a + c) / arr.length).toFixed(2)), 0),
     }),
     {} as PricesPerYear
   );
@@ -104,7 +104,7 @@ export const getAveragePricePerYear = (prices: PriceValues): PricesPerYear => {
 };
 
 export const getItemType = (item: IItemProperties): ItemsType | void =>
-  item.descriptions && itemTypes.find(type => item.market_hash_name.toLowerCase().includes(type));
+  item.descriptions && itemTypes.find((type) => item.market_hash_name.toLowerCase().includes(type));
 
 export const findItemsInTreause = (
   appid: string,
@@ -117,7 +117,7 @@ export const findItemsInTreause = (
         case 'trove carafe':
         case 'treasure': {
           return items.descriptions.filter(
-            el =>
+            (el) =>
               ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b', 'e4ae39'].includes(
                 ('color' in el && el.color) || ''
               ) &&
@@ -135,7 +135,7 @@ export const findItemsInTreause = (
         case 'souvenir package':
         case 'holo-foil':
         case 'capsule': {
-          return items.descriptions.filter(el =>
+          return items.descriptions.filter((el) =>
             ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(('color' in el && el.color) || '')
           );
         }
@@ -145,7 +145,7 @@ export const findItemsInTreause = (
       switch (treasureType) {
         case 'case':
         case 'crate': {
-          return items.descriptions.filter(el =>
+          return items.descriptions.filter((el) =>
             ['6f6a63', 'b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(
               ('color' in el && el.color) || ''
             )
@@ -157,21 +157,17 @@ export const findItemsInTreause = (
       switch (treasureType) {
         case 'safe':
           return [...new DOMParser().parseFromString(items.descriptions[0].value, 'text/html').querySelectorAll('span')]
-            .map(el => ({
+            .map((el) => ({
               value: el.textContent?.trim() || '',
-              color:
-                el
-                  .getAttribute('style')
-                  ?.split(' ')[1]
-                  .replace('#', '') || undefined,
+              color: el.getAttribute('style')?.split(' ')[1].replace('#', '') || undefined,
               subitems: [],
               price: '',
               domNode: document.createElement('div'),
               img: '',
-              market_hash_name: ''
+              market_hash_name: '',
             }))
             .filter(
-              el =>
+              (el) =>
                 ['2360D8', '9900FF', 'FF00FF', 'FF0000', 'FFAA00'].includes(('color' in el && el.color) || '') &&
                 el.value.includes(' | ')
             );
@@ -189,11 +185,11 @@ const findSubItemsInHTML = async (
 ): Promise<ISubItem[]> => {
   const parser: DOMParser = new DOMParser();
   const html: Document = parser.parseFromString(
-    await doReq(`${SUB_ITEMS_URL}${itemName}`).then(r => r.data),
+    await doReq(`${SUB_ITEMS_URL}${itemName}`).then((r) => r.data),
     'text/html'
   );
   return [...html.querySelectorAll('#searchResultsRows a')]
-    .map(el => {
+    .map((el) => {
       const name =
         treasureType !== 'souvenir package'
           ? (
@@ -204,10 +200,10 @@ const findSubItemsInHTML = async (
       return {
         name: name?.includes(itemName) ? name : '',
         market_hash_name: el.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '',
-        img: el.querySelector('img')?.src || ''
+        img: el.querySelector('img')?.src || '',
       };
     })
-    .filter(el => el.name);
+    .filter((el) => el.name);
 };
 
 export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => async (
@@ -246,7 +242,7 @@ const addPriceForSubItemsSetParams = (appid: string, country: CountryCode, curre
   toastr.info(`Getting price for: ${subItem.name}`);
   const price: IPrice | IPriceError = await doReq(
     PRICE_OVERVIEW_URL(appid, country, currency, subItem.market_hash_name)
-  ).then(r => r.data);
+  ).then((r) => r.data);
   if (price.success) subItem.price = price?.lowest_price || '';
   else subItem.price = '';
 };
@@ -262,7 +258,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
     <div class="select__options-stp">
       ${item.subitems
         .map(
-          el => `
+          (el) => `
         <div class="item__container-stp">
           <div class="item__image-container-stp">
             <img
@@ -311,7 +307,7 @@ const render = (item: IItemPropertyDescription) => {
   const divItems: Element[] = [...document.querySelectorAll('#largeiteminfo_item_descriptors .descriptor[style]')];
   const spanItems: Element[] = [...document.querySelectorAll('#largeiteminfo_item_descriptors span[style]')];
   const htmlItems: Element[] = divItems.length !== 0 ? divItems : spanItems.length !== 0 ? spanItems : [];
-  const htmlItem: HTMLDivElement = htmlItems.find(el =>
+  const htmlItem: HTMLDivElement = htmlItems.find((el) =>
     el?.textContent?.startsWith(item.value.trim())
   ) as HTMLDivElement;
   htmlItem?.parentElement?.replaceChild(item.domNode, htmlItem);
@@ -334,7 +330,7 @@ export const giveItemsPriceSetParams = (
   } else {
     const parser: DOMParser = new DOMParser();
     const html: Document = parser.parseFromString(
-      await doReq(`${SUB_ITEMS_URL}${item.value}`).then(r => r.data),
+      await doReq(`${SUB_ITEMS_URL}${item.value}`).then((r) => r.data),
       'text/html'
     );
     const itemHTMLNode: Element | null = html.querySelector('#searchResultsRows a');
@@ -345,7 +341,7 @@ export const giveItemsPriceSetParams = (
 
     const price: IPrice | IPriceError = await doReq(
       PRICE_OVERVIEW_URL(appid, country, currency, market_hash_name)
-    ).then(r => r.data);
+    ).then((r) => r.data);
 
     if (price.success) item.price = price?.lowest_price || '';
     else item.price = '';
@@ -376,6 +372,56 @@ export const renderAveragePricePerYear = (
             class="item-stp"
             style="color: #ffffff"
           >${year}: <span class="item__price-stp">${pricePrefix} ${price} ${priceSuffix}</span></div
+          >
+        </div>
+      `
+        )
+        .join('')}
+    </div>
+    `;
+  itemNode?.insertAdjacentElement('beforeend', container);
+  addScripts();
+};
+
+export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
+  const date = new Date();
+  const currentDay: number = date.getDate();
+  const currentMonth: TMonths = months[date.getMonth()];
+  const currentYear: number = date.getFullYear();
+  const salesPerDay: number[] = [];
+  const salesPerMonth: number[] = [];
+  const salesPerYear: number[] = [];
+
+  prices.forEach(([priceDate, _, quantity]) => {
+    const [month, day, year] = priceDate.split(' ');
+    if (month === currentMonth && +day === currentDay && +year === currentYear) salesPerDay.push(+quantity);
+    if (month === currentMonth && +year === currentYear) salesPerMonth.push(+quantity);
+    if (+year === currentYear) salesPerYear.push(+quantity);
+  });
+
+  return {
+    day: salesPerDay.reduce((a, c) => a + c, 0),
+    month: salesPerMonth.reduce((a, c) => a + c, 0),
+    year: salesPerYear.reduce((a, c) => a + c, 0),
+  };
+};
+
+export const renderQuantityOfSales = (prices: TQuantityOfSales, itemNode: Element | null) => {
+  const container: HTMLDivElement = document.createElement('div');
+
+  container.classList.add('select-stp');
+  container.innerHTML = `
+    <svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" class=""></path></svg>
+    <div class="select__label-stp" style="color: #ffffff">Sales per day, month, year</div>
+    <div class="select__options-stp">
+      ${Object.entries(prices)
+        .map(
+          ([typeOfTime, quantity]) => `
+        <div class="item__container-stp">
+          <div
+            class="item-stp"
+            style="color: #ffffff"
+          >${typeOfTime}: <span class="item__price-stp">${quantity}</span></div
           >
         </div>
       `
