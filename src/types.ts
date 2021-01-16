@@ -25,4 +25,4 @@ export type ItemsType =
 
 export type TMonths = 'Dec' | 'Jan' | 'Feb' | 'Mar' | 'Apr' | 'May' | 'Jun' | 'Jul' | 'Aug' | 'Sep' | 'Oct' | 'Nov';
 
-export type TQuantityOfSales = { day: number; month: number; year: number };
+export type TQuantityOfSales = { day: number; week: number; month: number; year: number };

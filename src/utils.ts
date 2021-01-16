@@ -401,6 +401,7 @@ export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
 
   return {
     day: salesPerDay.reduce((a, c) => a + c, 0),
+    week: Math.floor(salesPerMonth.reduce((a, c) => a + c, 0) / 4),
     month: salesPerMonth.reduce((a, c) => a + c, 0),
     year: salesPerYear.reduce((a, c) => a + c, 0),
   };
@@ -412,7 +413,7 @@ export const renderQuantityOfSales = (prices: TQuantityOfSales, itemNode: Elemen
   container.classList.add('select-stp');
   container.innerHTML = `
     <svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" class=""></path></svg>
-    <div class="select__label-stp" style="color: #ffffff">Sales per day, month, year</div>
+    <div class="select__label-stp" style="color: #ffffff">Sales per day, week, month, year</div>
     <div class="select__options-stp">
       ${Object.entries(prices)
         .map(
