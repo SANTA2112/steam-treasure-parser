@@ -26,6 +26,7 @@ module.exports = {
       },
     ],
   },
+  devtool: process.env.MODE === 'production' ? false : 'inline-source-map',
   resolve: {
     extensions: ['.ts', '.js'],
   },
