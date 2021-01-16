@@ -8,9 +8,9 @@ import {
   IResponse,
   IItemProperties,
   ISubItem,
-  IItemPropertyDescription
+  IItemPropertyDescription,
 } from './interfaces';
-import { ItemsType, PricesPerYear } from './types';
+import { ItemsType, PricesPerYear, TQuantityOfSales } from './types';
 
 import { doReq } from './API';
 import {
@@ -21,7 +21,9 @@ import {
   getSubItemsSetParams,
   giveItemsPriceSetParams,
   parallel,
-  renderAveragePricePerYear
+  renderAveragePricePerYear,
+  getQuantityOfSales,
+  renderQuantityOfSales,
 } from './utils';
 import { PRICE_HISTIRY_URL, PRICE_OVERVIEW_URL, ITEM_TYPE_URL, toastrOptions } from './constants';
 
@@ -46,6 +48,7 @@ const main = async () => {
     const { prices, price_prefix, price_suffix } = itemPriceHistrory.data;
     const lowestPrice: string = `${itemPrice.data?.lowest_price || itemPrice.data?.median_price || ''}`;
     const averagePricePerYear: PricesPerYear = getAveragePricePerYear(prices);
+    const quantityOfSales: TQuantityOfSales = getQuantityOfSales(prices);
     const itemInfo: IItemProperties =
       itemTypeInfo.data.assets[appid][Object.keys(itemTypeInfo.data.assets[appid])[0]][
         Object.keys(itemTypeInfo.data.assets[appid][Object.keys(itemTypeInfo.data.assets[appid])[0]])[0]
@@ -53,6 +56,7 @@ const main = async () => {
     const itemType: ItemsType | void = getItemType(itemInfo);
     itemNode?.insertAdjacentHTML('beforeend', `<div>Price: ${lowestPrice}</div>`);
     renderAveragePricePerYear(price_prefix, price_suffix, averagePricePerYear, itemNode);
+    renderQuantityOfSales(quantityOfSales, itemNode);
     if (itemType) {
       itemInfo.descriptions = findItemsInTreause(appid, itemType, itemInfo);
       const getSubItems: (item: IItemPropertyDescription) => Promise<ISubItem[]> = getSubItemsSetParams(
@@ -68,11 +72,11 @@ const main = async () => {
       toastr.info('Getting SubItems');
       await parallel<IItemPropertyDescription, ISubItem[]>(itemInfo.descriptions, getSubItems, {
         streams: 3,
-        timeout: 600
+        timeout: 600,
       });
       await parallel<IItemPropertyDescription, void>(itemInfo.descriptions, giveItemsPrice, {
         streams: 1,
-        timeout: 3000
+        timeout: 3000,
       });
     }
   }
