@@ -1,151 +1,6 @@
 import { options } from 'toastr';
 
-import { ICountryInfo } from './interfaces';
-import { ItemsType, TMonths } from './types';
-import { Currency, Languages, CountryCode } from './enums';
-
-export const countryInfoArray: ICountryInfo[] = [
-  {
-    language: Languages.brazilian,
-    currency: Currency.BRL,
-    countryCode: CountryCode.BR,
-  },
-  {
-    language: Languages.bulgarian,
-    currency: Currency.USD,
-    countryCode: CountryCode.BG,
-  },
-  {
-    language: Languages.czech,
-    currency: Currency.USD,
-    countryCode: CountryCode.CZ,
-  },
-  {
-    language: Languages.danish,
-    currency: Currency.USD,
-    countryCode: CountryCode.DK,
-  },
-  {
-    language: Languages.dutch,
-    currency: Currency.EUR,
-    countryCode: CountryCode.NL,
-  },
-  {
-    language: Languages.english,
-    currency: Currency.USD,
-    countryCode: CountryCode.EN,
-  },
-  {
-    language: Languages.finnish,
-    currency: Currency.USD,
-    countryCode: CountryCode.FI,
-  },
-  {
-    language: Languages.french,
-    currency: Currency.USD,
-    countryCode: CountryCode.FR,
-  },
-  {
-    language: Languages.german,
-    currency: Currency.USD,
-    countryCode: CountryCode.DE,
-  },
-  {
-    language: Languages.greek,
-    currency: Currency.USD,
-    countryCode: CountryCode.GR,
-  },
-  {
-    language: Languages.hungarian,
-    currency: Currency.USD,
-    countryCode: CountryCode.HU,
-  },
-  {
-    language: Languages.italian,
-    currency: Currency.USD,
-    countryCode: CountryCode.IT,
-  },
-  {
-    language: Languages.japanese,
-    currency: Currency.JPY,
-    countryCode: CountryCode.JP,
-  },
-  {
-    language: Languages.koreana,
-    currency: Currency.KRW,
-    countryCode: CountryCode.KR,
-  },
-  {
-    language: Languages.latam,
-    currency: Currency.USD,
-    countryCode: CountryCode.ES,
-  },
-  {
-    language: Languages.norwegian,
-    currency: Currency.NOK,
-    countryCode: CountryCode.NO,
-  },
-  {
-    language: Languages.polish,
-    currency: Currency.PLN,
-    countryCode: CountryCode.PL,
-  },
-  {
-    language: Languages.portuguese,
-    currency: Currency.USD,
-    countryCode: CountryCode.PT,
-  },
-  {
-    language: Languages.romanian,
-    currency: Currency.USD,
-    countryCode: CountryCode.RO,
-  },
-  {
-    language: Languages.russian,
-    currency: Currency.RUB,
-    countryCode: CountryCode.RU,
-  },
-  {
-    language: Languages.schinese,
-    currency: Currency.CNY,
-    countryCode: CountryCode.CN,
-  },
-  {
-    language: Languages.spanish,
-    currency: Currency.USD,
-    countryCode: CountryCode.ES,
-  },
-  {
-    language: Languages.swedish,
-    currency: Currency.CHF,
-    countryCode: CountryCode.SE,
-  },
-  {
-    language: Languages.tchinese,
-    currency: Currency.CNY,
-    countryCode: CountryCode.TW,
-  },
-  {
-    language: Languages.thai,
-    currency: Currency.THB,
-    countryCode: CountryCode.TH,
-  },
-  {
-    language: Languages.turkish,
-    currency: Currency.TRY,
-    countryCode: CountryCode.TR,
-  },
-  {
-    language: Languages.ukrainian,
-    currency: Currency.UAH,
-    countryCode: CountryCode.UA,
-  },
-  {
-    language: Languages.vietnamese,
-    currency: Currency.VND,
-    countryCode: CountryCode.VN,
-  },
-];
+import { ItemsType, TMonths, TCurrencyIds, TCurrencyValues } from './types';
 
 export const itemTypes: ItemsType[] = [
   'souvenir package',
@@ -163,24 +18,24 @@ export const BASE_URL: string = 'https://steamcommunity.com/market';
 
 export const PRICE_OVERVIEW_URL = (
   appid: string,
-  country: CountryCode,
-  currency: Currency,
+  country: string,
+  currency: TCurrencyIds,
   market_hash_name: string
 ): string =>
   `/priceoverview?appid=${appid}&country=${country}&currency=${currency}&market_hash_name=${market_hash_name}`;
 
 export const PRICE_HISTIRY_URL = (
   appid: string,
-  country: CountryCode,
-  currency: Currency,
+  country: string,
+  currency: TCurrencyIds,
   market_hash_name: string
 ): string =>
   `/pricehistory?appid=${appid}&country=${country}&currency=${currency}&market_hash_name=${market_hash_name}`;
 
 export const ITEM_TYPE_URL = (
   appid: string,
-  language: Languages,
-  currency: Currency,
+  language: string,
+  currency: TCurrencyIds,
   market_hash_name: string
 ): string => `/listings/${appid}/${market_hash_name}/render/?start=0&count=1&language=${language}&currency=${currency}`;
 
@@ -203,3 +58,48 @@ export const toastrOptions: typeof options = {
 };
 
 export const months: TMonths[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+export const currencyIds: TCurrencyValues = {
+  '1': 'USD',
+  '2': 'GBP',
+  '3': 'EUR',
+  '4': 'CHF',
+  '5': 'RUB',
+  '6': 'PLN',
+  '7': 'BRL',
+  '8': 'JPY',
+  '9': 'NOK',
+  '10': 'IDR',
+  '11': 'MYR',
+  '12': 'PHP',
+  '13': 'SGD',
+  '14': 'THB',
+  '15': 'VND',
+  '16': 'KRW',
+  '17': 'TRY',
+  '18': 'UAH',
+  '19': 'MXN',
+  '20': 'CAD',
+  '21': 'AUD',
+  '22': 'NZD',
+  '23': 'CNY',
+  '24': 'INR',
+  '25': 'CLP',
+  '26': 'PEN',
+  '27': 'COP',
+  '28': 'ZAR',
+  '29': 'HKD',
+  '30': 'TWD',
+  '31': 'SAR',
+  '32': 'AED',
+  '34': 'ARS',
+  '35': 'ILS',
+  '36': 'BYN',
+  '37': 'KZT',
+  '38': 'KWD',
+  '39': 'QAR',
+  '40': 'CRC',
+  '41': 'UYU',
+  '9000': 'RMB',
+  '9001': 'NXP',
+};

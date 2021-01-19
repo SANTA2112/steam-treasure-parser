@@ -1,4 +1,4 @@
-import { Currency, Languages, CountryCode } from './enums';
+import { TCurrencyIds } from './types';
 
 export interface IFetcher<T, R> {
   (arg: T): Promise<R | R[]>;
@@ -97,17 +97,7 @@ export interface ICookie {
 export interface IInit {
   appid: string;
   market_hash_name: string;
-  currency: Currency;
-  language: Languages;
-  country: CountryCode;
-}
-export interface ICountryInfo {
-  language: Languages;
-  currency: Currency;
-  countryCode: CountryCode;
-}
-
-export interface IUserLangInfo {
-  language: string | void;
-  countryCode: string;
+  currency: TCurrencyIds;
+  language: string;
+  country: string;
 }

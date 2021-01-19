@@ -2,8 +2,17 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import './_assets/css/style.css';
 
-import { Currency, Languages, CountryCode } from './enums';
-import { Groups, ItemsType, PriceValues, PricesPerYear, PricesPerYearArr, TMonths, TQuantityOfSales } from './types';
+import {
+  Groups,
+  ItemsType,
+  PriceValues,
+  PricesPerYear,
+  PricesPerYearArr,
+  TMonths,
+  TQuantityOfSales,
+  TCurrencyIds,
+} from './types';
+
 import {
   ICookie,
   IInit,
@@ -16,12 +25,10 @@ import {
   IFetcher,
   IFetchError,
   IOptions,
-  IUserLangInfo,
-  ICountryInfo,
 } from './interfaces';
 
 import { doReq } from './API';
-import { countryInfoArray, itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL, months } from './constants';
+import { itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL, months } from './constants';
 
 export const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
@@ -70,21 +77,33 @@ const addScripts = (): void => {
   selects.forEach((select) => (select.onclick = () => select.classList.toggle('active')));
 };
 
+const findPattern = (text: string, reg: string) => {
+  const regex: RegExp = new RegExp(reg);
+  const matchRes: RegExpMatchArray | null = text.match(regex);
+  return matchRes && matchRes[1];
+};
+
 export const init = (): IInit => {
   const parsedString: RegExpMatchArray = window.location.href.match(
     /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>[\w\%\-\.\']+)/
   )!;
   const { appid, market_hash_name } = parsedString.groups as Groups;
-  const userLangInfo: IUserLangInfo = {
-    language: getUserICookie().Steam_Language,
-    countryCode: decodeURIComponent(getUserICookie().steamCountry || '').split('|')[0] || CountryCode.EN,
-  };
-  let countryInfo: ICountryInfo | undefined = countryInfoArray.find((el) => el.language === userLangInfo.language);
-  if (!countryInfo) countryInfo = countryInfoArray.find((el) => el.countryCode === userLangInfo.countryCode);
 
-  const language: Languages = countryInfo?.language || Languages.english;
-  const country: CountryCode = countryInfo?.countryCode || CountryCode.EN;
-  const currency: Currency = countryInfo?.currency || Currency.USD;
+  let language = 'english';
+  let country: string = 'US';
+  let currency: TCurrencyIds = 1;
+
+  const scripts = [...document.querySelectorAll('script')];
+
+  for (let script of scripts) {
+    const matchRes = findPattern(script.outerHTML, 'g_strLanguage = "(.+?)"');
+    const matchRes2 = findPattern(script.outerHTML, '"wallet_country":"(.+?)"');
+    const matchRes3 = findPattern(script.outerHTML, '"wallet_currency":(\\d+?)');
+    if (matchRes !== null) language = matchRes;
+    if (matchRes2 !== null) country = matchRes2;
+    if (matchRes3 !== null) currency = +matchRes3 as TCurrencyIds;
+  }
+
   return { appid, market_hash_name, currency, language, country };
 };
 
@@ -236,7 +255,7 @@ export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => 
   return (item.subitems = []);
 };
 
-const addPriceForSubItemsSetParams = (appid: string, country: CountryCode, currency: Currency) => async (
+const addPriceForSubItemsSetParams = (appid: string, country: string, currency: TCurrencyIds) => async (
   subItem: ISubItem
 ): Promise<void> => {
   toastr.info(`Getting price for: ${subItem.name}`);
@@ -315,8 +334,8 @@ const render = (item: IItemPropertyDescription) => {
 
 export const giveItemsPriceSetParams = (
   appid: string,
-  country: CountryCode,
-  currency: Currency,
+  country: string,
+  currency: TCurrencyIds,
   pricePrefix: string
 ) => async (item: IItemPropertyDescription): Promise<void> => {
   toastr.info(`Getting price for: ${item.value}`);

@@ -10,6 +10,7 @@ import {
   ISubItem,
   IItemPropertyDescription,
 } from './interfaces';
+
 import { ItemsType, PricesPerYear, TQuantityOfSales } from './types';
 
 import { doReq } from './API';
