@@ -30,6 +30,8 @@ import {
 import { doReq } from './API';
 import { itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL, months } from './constants';
 
+const getLastWeek = (today: Date) => new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+
 export const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
 export const parallel = async <T, R>(
@@ -407,9 +409,23 @@ export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
   const currentDay: number = date.getDate();
   const currentMonth: TMonths = months[date.getMonth()];
   const currentYear: number = date.getFullYear();
+
+  const lastWeek = getLastWeek(date);
+  const lastWeekMonth = months[lastWeek.getMonth()];
+  const lastWeekDay = lastWeek.getDate();
+  const lastWeekYear = lastWeek.getFullYear();
+
+  const lastWeekIndex: number = prices.findIndex(([priceDate]) => {
+    const [month, day, year] = priceDate.split(' ');
+    return month === lastWeekMonth && +day === lastWeekDay && +year === lastWeekYear;
+  });
+
   const salesPerDay: number[] = [];
   const salesPerMonth: number[] = [];
   const salesPerYear: number[] = [];
+  const salesPerWeek: number[] = [...prices]
+    .slice(lastWeekIndex !== -1 ? lastWeekIndex : 0)
+    .map(([, , quantity]) => +quantity);
 
   prices.forEach(([priceDate, _, quantity]) => {
     const [month, day, year] = priceDate.split(' ');
@@ -420,7 +436,7 @@ export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
 
   return {
     day: salesPerDay.reduce((a, c) => a + c, 0),
-    week: Math.floor(salesPerMonth.reduce((a, c) => a + c, 0) / 4),
+    week: salesPerWeek.reduce((a, c) => a + c, 0),
     month: salesPerMonth.reduce((a, c) => a + c, 0),
     year: salesPerYear.reduce((a, c) => a + c, 0),
   };
