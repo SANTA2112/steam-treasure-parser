@@ -12,17 +12,6 @@ export type PricesPerYear = {
 
 export type PriceValues = [string, number, string][];
 
-export type ItemsType =
-  | 'case'
-  | 'treasure'
-  | 'trove carafe'
-  | 'container'
-  | 'souvenir package'
-  | 'capsule'
-  | 'crate'
-  | 'safe'
-  | 'holo-foil';
-
 export type TMonths = 'Dec' | 'Jan' | 'Feb' | 'Mar' | 'Apr' | 'May' | 'Jun' | 'Jul' | 'Aug' | 'Sep' | 'Oct' | 'Nov';
 
 const currencyIds = [

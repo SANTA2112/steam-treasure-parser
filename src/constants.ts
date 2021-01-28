@@ -1,28 +1,8 @@
 import { options } from 'toastr';
 
-import { ItemsType, TMonths, TCurrencyIds, TCurrencyValues } from './types';
-
-export const itemTypes: ItemsType[] = [
-  'souvenir package',
-  'capsule',
-  'container',
-  'case',
-  'treasure',
-  'crate',
-  'safe',
-  'holo-foil',
-  'trove carafe',
-];
+import { TMonths, TCurrencyIds, TCurrencyValues } from './types';
 
 export const BASE_URL: string = 'https://steamcommunity.com/market';
-
-export const PRICE_OVERVIEW_URL = (
-  appid: string,
-  country: string,
-  currency: TCurrencyIds,
-  market_hash_name: string
-): string =>
-  `/priceoverview?appid=${appid}&country=${country}&currency=${currency}&market_hash_name=${market_hash_name}`;
 
 export const PRICE_HISTIRY_URL = (
   appid: string,
@@ -39,7 +19,8 @@ export const ITEM_TYPE_URL = (
   market_hash_name: string
 ): string => `/listings/${appid}/${market_hash_name}/render/?start=0&count=1&language=${language}&currency=${currency}`;
 
-export const SUB_ITEMS_URL = 'https://steamcommunity.com/market/search?q=';
+export const ITEM_INFO_URL = (appid: string, market_hash_name: string, resultsCount: number): string =>
+  `/search/render/?search_descriptions=1&count=${resultsCount}&appid=${appid}&norender=1&query=${market_hash_name}`;
 
 export const toastrOptions: typeof options = {
   closeButton: true,
@@ -48,7 +29,7 @@ export const toastrOptions: typeof options = {
   preventDuplicates: true,
   showDuration: 300,
   hideDuration: 1000,
-  timeOut: 3000,
+  timeOut: 2000,
   extendedTimeOut: 1000,
   showEasing: 'swing',
   hideEasing: 'linear',

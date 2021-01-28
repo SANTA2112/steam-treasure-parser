@@ -21,13 +21,6 @@ export interface IDone<T, R> {
   errors: IFetchError<T>[];
 }
 
-export interface IPrice {
-  success: boolean;
-  lowest_price?: string;
-  volume: string;
-  median_price?: string;
-}
-
 export interface IPriceHistory {
   success: boolean;
   price_prefix: string;
@@ -38,18 +31,17 @@ export interface IPriceHistory {
 export interface ISubItem {
   name: string;
   market_hash_name: string;
-  img: string;
-  price?: string;
+  image: string;
+  price: string;
 }
 
 export interface IItemPropertyDescription {
   value: string;
   color?: string;
-  type?: string;
   subitems: ISubItem[];
   price: string;
   domNode: HTMLDivElement;
-  img: string;
+  image: string;
   market_hash_name: string;
 }
 
@@ -85,19 +77,54 @@ export interface IResponse<T> {
   status: number;
 }
 
-export interface ICookie {
-  browserid: string;
-  timezoneOffset: string;
-  steamCountry: string;
-  recentapps: string;
-  sessionid: string;
-  app_impressions: string;
-  Steam_Language: string;
-}
 export interface IInit {
   appid: string;
   market_hash_name: string;
   currency: TCurrencyIds;
   language: string;
   country: string;
+}
+
+export interface IItemInfo {
+  success: boolean;
+  start: number;
+  pagesize: number;
+  total_count: number;
+  searchdata: ISearchdata;
+  results: IResult[];
+}
+interface ISearchdata {
+  query: string;
+  search_descriptions: boolean;
+  total_count: number;
+  pagesize: number;
+  prefix: string;
+  class_prefix: string;
+}
+
+interface IResult {
+  name: string;
+  hash_name: string;
+  sell_listings: number;
+  sell_price: number;
+  sell_price_text: string;
+  app_icon: string;
+  app_name: string;
+  asset_description: IAssetDescription;
+  sale_price_text: string;
+}
+
+interface IAssetDescription {
+  appid: number;
+  classid: string;
+  instanceid: string;
+  background_color: string;
+  icon_url: string;
+  tradable: number;
+  name: string;
+  name_color: string;
+  type: string;
+  market_name: string;
+  market_hash_name: string;
+  commodity: number;
 }

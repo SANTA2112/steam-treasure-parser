@@ -2,33 +2,24 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import './_assets/css/style.css';
 
-import {
-  Groups,
-  ItemsType,
-  PriceValues,
-  PricesPerYear,
-  PricesPerYearArr,
-  TMonths,
-  TQuantityOfSales,
-  TCurrencyIds,
-} from './types';
+import { Groups, PriceValues, PricesPerYear, PricesPerYearArr, TMonths, TQuantityOfSales, TCurrencyIds } from './types';
 
 import {
-  ICookie,
   IInit,
   IItemProperties,
   ISubItem,
   IItemPropertyDescription,
-  IPrice,
   IPriceError,
   IDone,
   IFetcher,
   IFetchError,
   IOptions,
+  IItemInfo,
+  IResponse,
 } from './interfaces';
 
 import { doReq } from './API';
-import { itemTypes, SUB_ITEMS_URL, PRICE_OVERVIEW_URL, BASE_URL, months } from './constants';
+import { BASE_URL, months, ITEM_INFO_URL } from './constants';
 
 const getLastWeek = (today: Date) => new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
 
@@ -84,7 +75,7 @@ const findPattern = (text: string, reg: string) => {
 
 export const init = (): IInit => {
   const parsedString: RegExpMatchArray = window.location.href.match(
-    /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>[\w\%\-\.\']+)/
+    /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>[\w\%\-\.\'\(\)]+)/
   )!;
   const { appid, market_hash_name } = parsedString.groups as Groups;
 
@@ -106,163 +97,39 @@ export const init = (): IInit => {
   return { appid, market_hash_name, currency, language, country };
 };
 
-export const getAveragePricePerYear = (prices: PriceValues): PricesPerYear => {
-  const objectWithArrayOfPricesByYear = prices.reduce((acc, [priceDate, price, _]) => {
-    const year = priceDate.split(' ')[2];
-    return Object.keys(acc).includes(year) ? (acc[year].push(price), acc) : { ...acc, [year]: [price] };
-  }, {} as PricesPerYearArr);
-  const avgPricesPerYear = Object.entries(objectWithArrayOfPricesByYear).reduce(
-    (acc, [year, values]) => ({
-      ...acc,
-      [year]: values.reduce((a, c, i, arr) => (i !== arr.length - 1 ? a + c : +((a + c) / arr.length).toFixed(2)), 0),
-    }),
-    {} as PricesPerYear
-  );
-  return avgPricesPerYear;
-};
-
-export const getItemType = (item: IItemProperties): ItemsType | void =>
-  item.descriptions && itemTypes.find((type) => item.market_hash_name.toLowerCase().includes(type));
-
-export const findItemsInTreause = (
+export const getItemInfo = (
   appid: string,
-  treasureType: ItemsType,
-  items: IItemProperties
-): IItemPropertyDescription[] => {
+  itemName: string,
+  count: number = 1
+): Promise<IResponse<IItemInfo | IPriceError>> => doReq(ITEM_INFO_URL(appid, itemName, count));
+
+export const findItemsInTreause = (appid: string, items: IItemProperties): IItemPropertyDescription[] => {
   switch (appid) {
     case '570': {
-      switch (treasureType) {
-        case 'trove carafe':
-        case 'treasure': {
-          return items.descriptions.filter(
-            (el) =>
-              ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b', 'e4ae39'].includes(
-                ('color' in el && el.color) || ''
-              ) &&
-              !(el.value.includes('The International') || el.value.includes('Battle Pass Levels')) &&
-              !el.value.includes('/') &&
-              !el.value.includes('.')
-          );
-        }
-      }
+      return items.descriptions.filter(
+        (el) =>
+          ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b', 'e4ae39'].includes(
+            ('color' in el && el.color) || ''
+          ) &&
+          !(el.value.includes('The International') || el.value.includes('Battle Pass Levels')) &&
+          !el.value.includes('/') &&
+          !el.value.includes('.')
+      );
     }
     case '730': {
-      switch (treasureType) {
-        case 'case':
-        case 'container':
-        case 'souvenir package':
-        case 'holo-foil':
-        case 'capsule': {
-          return items.descriptions.filter((el) =>
-            ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(('color' in el && el.color) || '')
-          );
-        }
-      }
+      return items.descriptions.filter((el) =>
+        ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(('color' in el && el.color) || '')
+      );
     }
     case '440': {
-      switch (treasureType) {
-        case 'case':
-        case 'crate': {
-          return items.descriptions.filter((el) =>
-            ['6f6a63', 'b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(
-              ('color' in el && el.color) || ''
-            )
-          );
-        }
-      }
-    }
-    case '218620': {
-      switch (treasureType) {
-        case 'safe':
-          return [...new DOMParser().parseFromString(items.descriptions[0].value, 'text/html').querySelectorAll('span')]
-            .map((el) => ({
-              value: el.textContent?.trim() || '',
-              color: el.getAttribute('style')?.split(' ')[1].replace('#', '') || undefined,
-              subitems: [],
-              price: '',
-              domNode: document.createElement('div'),
-              img: '',
-              market_hash_name: '',
-            }))
-            .filter(
-              (el) =>
-                ['2360D8', '9900FF', 'FF00FF', 'FF0000', 'FFAA00'].includes(('color' in el && el.color) || '') &&
-                el.value.includes(' | ')
-            );
-      }
+      return items.descriptions.filter((el) =>
+        ['6f6a63', 'b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'].includes(
+          ('color' in el && el.color) || ''
+        )
+      );
     }
   }
   return [];
-};
-
-const findSubItemsInHTML = async (
-  itemName: string,
-  treasureType: ItemsType,
-  itemColor1: string,
-  itemColor2?: string
-): Promise<ISubItem[]> => {
-  const parser: DOMParser = new DOMParser();
-  const html: Document = parser.parseFromString(
-    await doReq(`${SUB_ITEMS_URL}${itemName}`).then((r) => r.data),
-    'text/html'
-  );
-  return [...html.querySelectorAll('#searchResultsRows a')]
-    .map((el) => {
-      const name =
-        treasureType !== 'souvenir package'
-          ? (
-              (itemColor2 && el.querySelector(`span[style="color: ${itemColor2};"]`)) ||
-              el.querySelector(`span[style="color: ${itemColor1};"]`)
-            )?.textContent
-          : el.querySelector('span[style="color: #FFD700;"]')?.textContent;
-      return {
-        name: name?.includes(itemName) ? name : '',
-        market_hash_name: el.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '',
-        img: el.querySelector('img')?.src || '',
-      };
-    })
-    .filter((el) => el.name);
-};
-
-export const getSubItemsSetParams = (appid: string, treasureType: ItemsType) => async (
-  item: IItemPropertyDescription
-): Promise<ISubItem[]> => {
-  switch (appid) {
-    case '730': {
-      switch (treasureType) {
-        case 'case':
-        case 'container':
-        case 'souvenir package':
-          return (item.subitems = await findSubItemsInHTML(item.value, treasureType, '#D2D2D2', '#CF6A32'));
-        case 'capsule':
-      }
-    }
-    case '440': {
-      switch (treasureType) {
-        case 'case':
-        case 'crate':
-          return (item.subitems = await findSubItemsInHTML(item.value, treasureType, '#FAFAFA', '#CF6A32'));
-      }
-    }
-    case '218620': {
-      switch (treasureType) {
-        case 'safe':
-          return (item.subitems = await findSubItemsInHTML(item.value, treasureType, `#${item?.color}`));
-      }
-    }
-  }
-  return (item.subitems = []);
-};
-
-const addPriceForSubItemsSetParams = (appid: string, country: string, currency: TCurrencyIds) => async (
-  subItem: ISubItem
-): Promise<void> => {
-  toastr.info(`Getting price for: ${subItem.name}`);
-  const price: IPrice | IPriceError = await doReq(
-    PRICE_OVERVIEW_URL(appid, country, currency, subItem.market_hash_name)
-  ).then((r) => r.data);
-  if (price.success) subItem.price = price?.lowest_price || '';
-  else subItem.price = '';
 };
 
 const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescription): void => {
@@ -281,7 +148,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
           <div class="item__image-container-stp">
             <img
               class="item__image-stp"
-              src="${el.img}"
+              src="${el.image}"
             />
           </div>
           <a
@@ -306,7 +173,7 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
       <div class="item__image-container-stp">
         <img
           class="item__image-stp"
-          src="${item.img}"
+          src="${item.image}"
         />
       </div>
       <a
@@ -331,42 +198,64 @@ const render = (item: IItemPropertyDescription) => {
   htmlItem?.parentElement?.replaceChild(item.domNode, htmlItem);
 };
 
-export const giveItemsPriceSetParams = (
-  appid: string,
-  country: string,
-  currency: TCurrencyIds,
-  pricePrefix: string
-) => async (item: IItemPropertyDescription): Promise<void> => {
-  toastr.info(`Getting price for: ${item.value}`);
-  if (item.subitems.length !== 0) {
-    const addPriceForSubItems: (subItem: ISubItem) => Promise<void> = addPriceForSubItemsSetParams(
-      appid,
-      country,
-      currency
-    );
-    await parallel<ISubItem, void>(item.subitems, addPriceForSubItems, { streams: 1, timeout: 3000 });
-  } else {
-    const parser: DOMParser = new DOMParser();
-    const html: Document = parser.parseFromString(
-      await doReq(`${SUB_ITEMS_URL}${item.value}`).then((r) => r.data),
-      'text/html'
-    );
-    const itemHTMLNode: Element | null = html.querySelector('#searchResultsRows a');
-    const market_hash_name: string =
-      itemHTMLNode?.querySelector('div[data-hash-name]')?.getAttribute('data-hash-name') || '';
-    item.img = itemHTMLNode?.querySelector('img')?.src || '';
-    item.market_hash_name = market_hash_name;
-
-    const price: IPrice | IPriceError = await doReq(
-      PRICE_OVERVIEW_URL(appid, country, currency, market_hash_name)
-    ).then((r) => r.data);
-
-    if (price.success) item.price = price?.lowest_price || '';
-    else item.price = '';
+const getSubItemsAndPrice = async (appid: string, item: IItemPropertyDescription): Promise<ISubItem[]> => {
+  switch (appid) {
+    case '730':
+    case '440':
+      return getItemInfo(appid, item.value, 100).then((r) =>
+        r.data.success
+          ? r.data.results
+              .filter((subItem) => subItem.name.includes(item.value))
+              .sort((a, b) => {
+                if (a.sell_price > b.sell_price) return 1;
+                if (a.sell_price < b.sell_price) return -1;
+                return 0;
+              })
+              .map((subItem) => ({
+                name: subItem.name,
+                market_hash_name: subItem.hash_name,
+                price: subItem.sale_price_text,
+                image: `https://community.akamai.steamstatic.com/economy/image/${subItem.asset_description.icon_url}`,
+              }))
+          : []
+      );
   }
+  return [];
+};
+
+export const giveItemsPriceSetParams = (appid: string, pricePrefix: string) => async (
+  item: IItemPropertyDescription
+): Promise<void> => {
+  toastr.info(`Getting price for: ${item.value}`);
+  item.subitems = await getSubItemsAndPrice(appid, item);
+
+  if (item.subitems.length === 0) {
+    const itemInfo = await getItemInfo(appid, item.value).then((r) => r.data);
+    if (itemInfo.success) {
+      item.image = `https://community.akamai.steamstatic.com/economy/image/${itemInfo.results[0].asset_description.icon_url}`;
+      item.price = itemInfo.results[0].sale_price_text;
+      item.market_hash_name = itemInfo.results[0].hash_name;
+    }
+  }
+
   createItem(appid, pricePrefix, item);
   render(item);
   addScripts();
+};
+
+export const getAveragePricePerYear = (prices: PriceValues): PricesPerYear => {
+  const objectWithArrayOfPricesByYear = prices.reduce((acc, [priceDate, price, _]) => {
+    const year = priceDate.split(' ')[2];
+    return Object.keys(acc).includes(year) ? (acc[year].push(price), acc) : { ...acc, [year]: [price] };
+  }, {} as PricesPerYearArr);
+  const avgPricesPerYear = Object.entries(objectWithArrayOfPricesByYear).reduce(
+    (acc, [year, values]) => ({
+      ...acc,
+      [year]: values.reduce((a, c, i, arr) => (i !== arr.length - 1 ? a + c : +((a + c) / arr.length).toFixed(2)), 0),
+    }),
+    {} as PricesPerYear
+  );
+  return avgPricesPerYear;
 };
 
 export const renderAveragePricePerYear = (
