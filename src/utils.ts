@@ -71,9 +71,6 @@ export const parallel = async <T, R>(
   };
 };
 
-const getUserICookie = (): Partial<ICookie> =>
-  document.cookie.split('; ').reduce((acc, cur) => ({ ...acc, [cur.split('=')[0]]: cur.split('=')[1] }), {});
-
 const addScripts = (): void => {
   const selects: HTMLDivElement[] = [...document.querySelectorAll('.select-stp')] as HTMLDivElement[];
   selects.forEach((select) => (select.onclick = () => select.classList.toggle('active')));
