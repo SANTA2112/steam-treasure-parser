@@ -2,7 +2,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import './_assets/css/style.css';
 
-import { Groups, PriceValues, PricesPerYear, PricesPerYearArr, TMonths, TQuantityOfSales, TCurrencyIds } from './types';
+import { Groups, PriceValues, PricesPerYear, PricesPerYearArr, TQuantityOfSales, TCurrencyIds } from './types';
 
 import {
   IInit,
@@ -21,7 +21,16 @@ import {
 import { doReq } from './API';
 import { BASE_URL, months, ITEM_INFO_URL } from './constants';
 
+const getLastDay = (today: Date) => new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
 const getLastWeek = (today: Date) => new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+const getLastMonth = (today: Date) => new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+const getLastYear = (today: Date) => new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+
+const getPriceIndexByDateSetParams = (prices: PriceValues) => (day: number, month: string, year: number) =>
+  prices.findIndex(([priceDate]) => {
+    const [monthPrice, dayPrice, yearPrice] = priceDate.split(' ');
+    return +dayPrice === day && monthPrice === month && +yearPrice === year;
+  });
 
 export const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
@@ -291,40 +300,39 @@ export const renderAveragePricePerYear = (
 };
 
 export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
-  const date = new Date();
-  const currentDay: number = date.getDate();
-  const currentMonth: TMonths = months[date.getMonth()];
-  const currentYear: number = date.getFullYear();
+  const tempDate = new Date();
+  const date = new Date(
+    tempDate.getUTCFullYear(),
+    tempDate.getUTCMonth(),
+    tempDate.getUTCDate(),
+    tempDate.getUTCHours(),
+    tempDate.getUTCMinutes(),
+    tempDate.getUTCSeconds()
+  );
 
-  const lastWeek = getLastWeek(date);
-  const lastWeekMonth = months[lastWeek.getMonth()];
-  const lastWeekDay = lastWeek.getDate();
-  const lastWeekYear = lastWeek.getFullYear();
+  const getPriceIndexByDate = getPriceIndexByDateSetParams(prices);
 
-  const lastWeekIndex: number = prices.findIndex(([priceDate]) => {
-    const [month, day, year] = priceDate.split(' ');
-    return month === lastWeekMonth && +day === lastWeekDay && +year === lastWeekYear;
-  });
-
-  const salesPerDay: number[] = [];
-  const salesPerMonth: number[] = [];
-  const salesPerYear: number[] = [];
-  const salesPerWeek: number[] = [...prices]
-    .slice(lastWeekIndex !== -1 ? lastWeekIndex : 0)
-    .map(([, , quantity]) => +quantity);
-
-  prices.forEach(([priceDate, _, quantity]) => {
-    const [month, day, year] = priceDate.split(' ');
-    if (month === currentMonth && +day === currentDay && +year === currentYear) salesPerDay.push(+quantity);
-    if (month === currentMonth && +year === currentYear) salesPerMonth.push(+quantity);
-    if (+year === currentYear) salesPerYear.push(+quantity);
-  });
+  const [salesPerDay, salesPerWeek, salesPerMonth, salesPerYear] = [
+    getLastDay(date),
+    getLastWeek(date),
+    getLastMonth(date),
+    getLastYear(date),
+  ]
+    .map((neededDate) =>
+      getPriceIndexByDate(neededDate.getDate(), months[neededDate.getMonth()], neededDate.getFullYear())
+    )
+    .map((index) =>
+      [...prices]
+        .slice(index !== -1 ? index : 0)
+        .map(([, , quantity]) => +quantity)
+        .reduce((a, c) => a + c, 0)
+    );
 
   return {
-    day: salesPerDay.reduce((a, c) => a + c, 0),
-    week: salesPerWeek.reduce((a, c) => a + c, 0),
-    month: salesPerMonth.reduce((a, c) => a + c, 0),
-    year: salesPerYear.reduce((a, c) => a + c, 0),
+    day: salesPerDay > salesPerWeek ? 0 : salesPerDay,
+    week: salesPerWeek > salesPerMonth ? 0 : salesPerWeek,
+    month: salesPerMonth,
+    year: salesPerYear,
   };
 };
 
