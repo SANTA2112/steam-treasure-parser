@@ -328,11 +328,12 @@ export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
         .reduce((a, c) => a + c, 0)
     );
 
+  console.log(salesPerDay, salesPerWeek, salesPerMonth, salesPerYear);
   return {
-    day: salesPerDay > salesPerWeek ? 0 : salesPerDay,
-    week: salesPerWeek > salesPerMonth ? 0 : salesPerWeek,
-    month: salesPerMonth,
-    year: salesPerYear,
+    day: salesPerDay > salesPerYear ? '0' : salesPerDay.toLocaleString(),
+    week: salesPerWeek > salesPerYear ? '0' : salesPerWeek.toLocaleString(),
+    month: salesPerMonth > salesPerYear ? '0' : salesPerMonth.toLocaleString(),
+    year: salesPerYear.toLocaleString(),
   };
 };
 
