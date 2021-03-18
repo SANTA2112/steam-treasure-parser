@@ -84,7 +84,7 @@ const findPattern = (text: string, reg: string) => {
 
 export const init = (): IInit => {
   const parsedString: RegExpMatchArray = window.location.href.match(
-    /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>[\w\%\-\.\'\(\)]+)/
+    /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>.+)/
   )!;
   const { appid, market_hash_name } = parsedString.groups as Groups;
 
@@ -328,7 +328,6 @@ export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
         .reduce((a, c) => a + c, 0)
     );
 
-  console.log(salesPerDay, salesPerWeek, salesPerMonth, salesPerYear);
   return {
     day: salesPerDay > salesPerYear ? '0' : salesPerDay.toLocaleString(),
     week: salesPerWeek > salesPerYear ? '0' : salesPerWeek.toLocaleString(),
