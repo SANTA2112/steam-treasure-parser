@@ -2,7 +2,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import './_assets/css/style.css';
 
-import { Groups, PriceValues, PricesPerYear, PricesPerYearArr, TQuantityOfSales, TCurrencyIds } from './types';
+import { Groups, PriceValues, PricesPerYear, PricesPerYearArr, TQuantityOfSales, TCurrencyIds, TMonths } from './types';
 
 import {
   IInit,
@@ -16,10 +16,12 @@ import {
   IOptions,
   IItemInfo,
   IResponse,
+  priceByQuarters,
+  pricesByQuarters,
 } from './interfaces';
 
 import { doReq } from './API';
-import { BASE_URL, months, ITEM_INFO_URL } from './constants';
+import { BASE_URL, months, ITEM_INFO_URL, quarters } from './constants';
 
 const getLastDay = (today: Date) => new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
 const getLastWeek = (today: Date) => new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
@@ -252,25 +254,33 @@ export const giveItemsPriceSetParams = (appid: string, pricePrefix: string) => a
   addScripts();
 };
 
-export const getAveragePricePerYear = (prices: PriceValues): PricesPerYear => {
-  const objectWithArrayOfPricesByYear = prices.reduce((acc, [priceDate, price, _]) => {
-    const year = priceDate.split(' ')[2];
-    return Object.keys(acc).includes(year) ? (acc[year].push(price), acc) : { ...acc, [year]: [price] };
-  }, {} as PricesPerYearArr);
-  const avgPricesPerYear = Object.entries(objectWithArrayOfPricesByYear).reduce(
-    (acc, [year, values]) => ({
+export const getAveragePricePerQuarters = (prices: PriceValues): priceByQuarters => {
+  return Object.entries(
+    prices.reduce((acc, [priceDate, priceRaw]) => {
+      const price = Math.round(priceRaw);
+      const [month, , year] = priceDate.split(' ');
+      return acc[year] && acc[year][quarters[month as TMonths]]
+        ? (acc[year][quarters[month as TMonths]].push(price), acc)
+        : { ...acc, [year]: { ...acc[year], [quarters[month as TMonths]]: [price] } };
+    }, {} as pricesByQuarters)
+  ).reduce((acc, [year, qPrices]) => {
+    return {
       ...acc,
-      [year]: values.reduce((a, c, i, arr) => (i !== arr.length - 1 ? a + c : +((a + c) / arr.length).toFixed(2)), 0),
-    }),
-    {} as PricesPerYear
-  );
-  return avgPricesPerYear;
+      [year]: Object.entries(qPrices).reduce(
+        (acc, [q, prices]) => ({
+          ...acc,
+          [q]: Math.round(prices.reduce((acc, price) => acc + price, 0) / prices.length),
+        }),
+        {}
+      ),
+    };
+  }, {});
 };
 
 export const renderAveragePricePerYear = (
   pricePrefix: string,
   priceSuffix: string,
-  prices: PricesPerYear,
+  prices: priceByQuarters,
   itemNode: Element | null
 ): void => {
   const container: HTMLDivElement = document.createElement('div');
@@ -278,16 +288,18 @@ export const renderAveragePricePerYear = (
   container.classList.add('select-stp');
   container.innerHTML = `
     <svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" class=""></path></svg>
-    <div class="select__label-stp" style="color: #ffffff">Prices per year</div>
+    <div class="select__label-stp" style="color: #ffffff">Prices per quarters</div>
     <div class="select__options-stp">
       ${Object.entries(prices)
         .map(
-          ([year, price]) => `
+          ([year, qPrices]) => `
         <div class="item__container-stp">
           <div
             class="item-stp"
             style="color: #ffffff"
-          >${year}: <span class="item__price-stp">${pricePrefix} ${price} ${priceSuffix}</span></div
+          >${year}: ${Object.entries(qPrices)
+            .map(([q, price]) => `<div class="item__price-stp">${q}: ${pricePrefix} ${price} ${priceSuffix}</div>`)
+            .join('')}</div
           >
         </div>
       `

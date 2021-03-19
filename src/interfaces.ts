@@ -128,3 +128,15 @@ interface IAssetDescription {
   market_hash_name: string;
   commodity: number;
 }
+
+export interface pricesByQuarters {
+  [key: string]: {
+    [key: string]: number[];
+  };
+}
+
+export interface priceByQuarters {
+  [key: string]: {
+    [key: string]: number;
+  };
+}

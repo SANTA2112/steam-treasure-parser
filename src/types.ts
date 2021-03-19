@@ -64,3 +64,7 @@ export type TCurrencyIds = typeof currencyIds[number];
 export type TCurrencyValues = { [k in TCurrencyIds]: string };
 
 export type TQuantityOfSales = { day: string; week: string; month: string; year: string };
+
+export type Quarters = {
+  [key in TMonths]: string;
+};

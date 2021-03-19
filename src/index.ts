@@ -8,15 +8,16 @@ import {
   IItemProperties,
   IItemPropertyDescription,
   IItemInfo,
+  priceByQuarters,
 } from './interfaces';
 
-import { PricesPerYear, TQuantityOfSales } from './types';
+import { TQuantityOfSales } from './types';
 
 import { doReq } from './API';
 
 import {
   init,
-  getAveragePricePerYear,
+  getAveragePricePerQuarters,
   findItemsInTreause,
   giveItemsPriceSetParams,
   parallel,
@@ -46,7 +47,7 @@ const main = async () => {
   if (itemPrice.data.success && itemPriceHistrory.data.success && itemTypeInfo.data.success && itemNode) {
     const { prices, price_prefix, price_suffix } = itemPriceHistrory.data;
 
-    const averagePricePerYear: PricesPerYear = getAveragePricePerYear(prices);
+    const averagePricePerYear: priceByQuarters = getAveragePricePerQuarters(prices);
     const quantityOfSales: TQuantityOfSales = getQuantityOfSales(prices);
     const itemInfo: IItemProperties =
       itemTypeInfo.data.assets[appid][Object.keys(itemTypeInfo.data.assets[appid])[0]][

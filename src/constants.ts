@@ -1,6 +1,6 @@
 import { options } from 'toastr';
 
-import { TMonths, TCurrencyIds, TCurrencyValues } from './types';
+import { TMonths, TCurrencyIds, TCurrencyValues, Quarters } from './types';
 
 export const BASE_URL: string = 'https://steamcommunity.com/market';
 
@@ -83,4 +83,19 @@ export const currencyIds: TCurrencyValues = {
   '41': 'UYU',
   '9000': 'RMB',
   '9001': 'NXP',
+};
+
+export const quarters: Quarters = {
+  Jan: 'Q1',
+  Feb: 'Q1',
+  Mar: 'Q1',
+  Apr: 'Q2',
+  May: 'Q2',
+  Jun: 'Q2',
+  Jul: 'Q3',
+  Aug: 'Q3',
+  Sep: 'Q3',
+  Oct: 'Q4',
+  Nov: 'Q4',
+  Dec: 'Q4',
 };
