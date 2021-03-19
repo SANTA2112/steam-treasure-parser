@@ -1,6 +1,6 @@
 ## steam-treasure-parser
 
-[Download link .zip](https://rghost.net/7rCJBbhhZ)
+[Download link .zip](https://rghost.net/7kvms27Jh)
 
 ### Run development mode
 
