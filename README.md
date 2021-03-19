@@ -10,7 +10,7 @@
 
 > npm run build
 
-![CS:GO Case Prices](hGuhAviXOZE.jpg)
-![Dota2 Case Prices](mQtVN7FCd7c.jpg)
-![TF2 Case Prices](NXiTd1ei53U.jpg)
-![Item Image](n48Je2lT4E.jpg)
+![CS:GO Case Prices](389abf0c01.png)
+![Dota2 Case Prices](c6b3f99ad8.png)
+![Rust Prices](c1a2a6ae17.png)
+![Item Image](c460a2d012.png)
