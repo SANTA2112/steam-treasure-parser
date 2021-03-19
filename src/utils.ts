@@ -2,7 +2,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import './_assets/css/style.css';
 
-import { Groups, PriceValues, PricesPerYear, PricesPerYearArr, TQuantityOfSales, TCurrencyIds, TMonths } from './types';
+import { Groups, PriceValues, TQuantityOfSales, TCurrencyIds, TMonths } from './types';
 
 import {
   IInit,
@@ -277,7 +277,7 @@ export const getAveragePricePerQuarters = (prices: PriceValues): priceByQuarters
   }, {});
 };
 
-export const renderAveragePricePerYear = (
+export const renderAveragePricePerQuarters = (
   pricePrefix: string,
   priceSuffix: string,
   prices: priceByQuarters,

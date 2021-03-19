@@ -21,7 +21,7 @@ import {
   findItemsInTreause,
   giveItemsPriceSetParams,
   parallel,
-  renderAveragePricePerYear,
+  renderAveragePricePerQuarters,
   getQuantityOfSales,
   renderQuantityOfSales,
 } from './utils';
@@ -47,7 +47,7 @@ const main = async () => {
   if (itemPrice.data.success && itemPriceHistrory.data.success && itemTypeInfo.data.success && itemNode) {
     const { prices, price_prefix, price_suffix } = itemPriceHistrory.data;
 
-    const averagePricePerYear: priceByQuarters = getAveragePricePerQuarters(prices);
+    const averagePricePerQuarters: priceByQuarters = getAveragePricePerQuarters(prices);
     const quantityOfSales: TQuantityOfSales = getQuantityOfSales(prices);
     const itemInfo: IItemProperties =
       itemTypeInfo.data.assets[appid][Object.keys(itemTypeInfo.data.assets[appid])[0]][
@@ -55,7 +55,7 @@ const main = async () => {
       ];
 
     itemNode.insertAdjacentHTML('beforeend', `<div>Price: ${itemPrice.data.results[0].sell_price_text}</div>`);
-    renderAveragePricePerYear(price_prefix, price_suffix, averagePricePerYear, itemNode);
+    renderAveragePricePerQuarters(price_prefix, price_suffix, averagePricePerQuarters, itemNode);
     renderQuantityOfSales(quantityOfSales, itemNode);
 
     itemInfo.descriptions = findItemsInTreause(appid, itemInfo);
