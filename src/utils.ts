@@ -324,9 +324,9 @@ export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
 
   const getPriceIndexByDate = getPriceIndexByDateSetParams(prices);
 
-  const findIndexByDate = (date: Date): number => {
+  const findIndexByDate = (date: Date, depth = 10): number => {
     const index = getPriceIndexByDate(date.getDate(), months[date.getMonth()], date.getFullYear());
-    return index !== -1 ? index : findIndexByDate(getLastDay(date));
+    return depth === 0 || index !== -1 ? index : findIndexByDate(getLastDay(date), depth - 1);
   };
 
   const [salesPerDay, salesPerWeek, salesPerMonth, salesPerYear] = [
