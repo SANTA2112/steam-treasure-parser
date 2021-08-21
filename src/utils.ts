@@ -234,25 +234,25 @@ const getSubItemsAndPrice = async (appid: string, item: IItemPropertyDescription
   return [];
 };
 
-export const giveItemsPriceSetParams = (appid: string, pricePrefix: string) => async (
-  item: IItemPropertyDescription
-): Promise<void> => {
-  toastr.info(`Getting price for: ${item.value}`);
-  item.subitems = await getSubItemsAndPrice(appid, item);
+export const giveItemsPriceSetParams =
+  (appid: string, pricePrefix: string) =>
+  async (item: IItemPropertyDescription): Promise<void> => {
+    toastr.info(`Getting price for: ${item.value}`);
+    item.subitems = await getSubItemsAndPrice(appid, item);
 
-  if (item.subitems.length === 0) {
-    const itemInfo = await getItemInfo(appid, item.value).then((r) => r.data);
-    if (itemInfo.success) {
-      item.image = `https://community.akamai.steamstatic.com/economy/image/${itemInfo.results[0].asset_description.icon_url}`;
-      item.price = itemInfo.results[0].sale_price_text;
-      item.market_hash_name = itemInfo.results[0].hash_name;
+    if (item.subitems.length === 0) {
+      const itemInfo = await getItemInfo(appid, item.value).then((r) => r.data);
+      if (itemInfo.success) {
+        item.image = `https://community.akamai.steamstatic.com/economy/image/${itemInfo.results[0].asset_description.icon_url}`;
+        item.price = itemInfo.results[0].sale_price_text;
+        item.market_hash_name = itemInfo.results[0].hash_name;
+      }
     }
-  }
 
-  createItem(appid, pricePrefix, item);
-  render(item);
-  addScripts();
-};
+    createItem(appid, pricePrefix, item);
+    render(item);
+    addScripts();
+  };
 
 export const getAveragePricePerQuarters = (prices: PriceValues): priceByQuarters => {
   return Object.entries(
@@ -324,26 +324,24 @@ export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
 
   const getPriceIndexByDate = getPriceIndexByDateSetParams(prices);
 
+  const findIndexByDate = (date: Date): number => {
+    const index = getPriceIndexByDate(date.getDate(), months[date.getMonth()], date.getFullYear());
+    return index !== -1 ? index : findIndexByDate(getLastDay(date));
+  };
+
   const [salesPerDay, salesPerWeek, salesPerMonth, salesPerYear] = [
     getLastDay(date),
     getLastWeek(date),
     getLastMonth(date),
     getLastYear(date),
   ]
-    .map((neededDate) =>
-      getPriceIndexByDate(neededDate.getDate(), months[neededDate.getMonth()], neededDate.getFullYear())
-    )
-    .map((index) =>
-      [...prices]
-        .slice(index !== -1 ? index : 0)
-        .map(([, , quantity]) => +quantity)
-        .reduce((a, c) => a + c, 0)
-    );
+    .map((neededDate) => findIndexByDate(neededDate))
+    .map((index) => prices.slice(index).reduce((a, [, , quantity]) => +quantity + a, 0));
 
   return {
-    day: salesPerDay > salesPerYear ? '0' : salesPerDay.toLocaleString(),
-    week: salesPerWeek > salesPerYear ? '0' : salesPerWeek.toLocaleString(),
-    month: salesPerMonth > salesPerYear ? '0' : salesPerMonth.toLocaleString(),
+    day: salesPerDay.toLocaleString(),
+    week: salesPerWeek.toLocaleString(),
+    month: salesPerMonth.toLocaleString(),
     year: salesPerYear.toLocaleString(),
   };
 };
