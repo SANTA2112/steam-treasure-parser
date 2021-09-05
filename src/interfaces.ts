@@ -1,4 +1,4 @@
-import { TCurrencyIds } from './types';
+import { Quarters, TCurrencyIds } from './types';
 
 export interface IFetcher<T, R> {
   (arg: T): Promise<R | R[]>;
@@ -131,12 +131,12 @@ interface IAssetDescription {
 
 export interface pricesByQuarters {
   [key: string]: {
-    [key: string]: number[];
+    [key in Quarters]: number[];
   };
 }
 
 export interface priceByQuarters {
   [key: string]: {
-    [key: string]: number;
+    [key in Quarters]: number;
   };
 }
