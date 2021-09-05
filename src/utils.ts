@@ -2,7 +2,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import './_assets/css/style.css';
 
-import { Groups, PriceValues, TQuantityOfSales, TCurrencyIds, TMonths } from './types';
+import { Groups, PriceValues, TQuantityOfSales, TCurrencyIds, TMonths, Quarters } from './types';
 
 import {
   IInit,
@@ -94,7 +94,7 @@ export const parallel = async <T, R>(
 };
 
 const addScripts = (): void => {
-  const selects: HTMLDivElement[] = [...document.querySelectorAll('.select-stp')] as HTMLDivElement[];
+  const selects = [...document.querySelectorAll<HTMLDivElement>('.select-stp')];
   selects.forEach((select) => (select.onclick = () => select.classList.toggle('active')));
 };
 
@@ -223,9 +223,7 @@ const render = (item: IItemPropertyDescription) => {
   const divItems: Element[] = [...document.querySelectorAll('#largeiteminfo_item_descriptors .descriptor[style]')];
   const spanItems: Element[] = [...document.querySelectorAll('#largeiteminfo_item_descriptors span[style]')];
   const htmlItems: Element[] = divItems.length !== 0 ? divItems : spanItems.length !== 0 ? spanItems : [];
-  const htmlItem: HTMLDivElement = htmlItems.find((el) =>
-    el?.textContent?.startsWith(item.value.trim())
-  ) as HTMLDivElement;
+  const htmlItem = htmlItems.find((el) => el?.textContent?.startsWith(item.value.trim())) as HTMLDivElement;
   htmlItem?.parentElement?.replaceChild(item.domNode, htmlItem);
 };
 
@@ -275,26 +273,29 @@ export const giveItemsPriceSetParams =
   };
 
 export const getAveragePricePerQuarters = (prices: PriceValues): priceByQuarters => {
-  return Object.entries(
-    prices.reduce((acc, [priceDate, priceRaw]) => {
-      const price = Math.round(priceRaw);
-      const [month, , year] = priceDate.split(' ');
-      return acc[year] && acc[year][quarters[month as TMonths]]
-        ? (acc[year][quarters[month as TMonths]].push(price), acc)
-        : { ...acc, [year]: { ...acc[year], [quarters[month as TMonths]]: [price] } };
-    }, {} as pricesByQuarters)
-  ).reduce((acc, [year, qPrices]) => {
-    return {
-      ...acc,
-      [year]: Object.entries(qPrices).reduce(
-        (acc, [q, prices]) => ({
-          ...acc,
-          [q]: Math.round(prices.reduce((acc, price) => acc + price, 0) / prices.length),
-        }),
-        {}
-      ),
-    };
-  }, {});
+  const init = [...new Set(prices.map(([priceDate]) => priceDate.split(' ')[2]))].reduce<pricesByQuarters>(
+    (acc, year) => ((acc[year] = { Q1: [], Q2: [], Q3: [], Q4: [] }), acc),
+    {}
+  );
+
+  const collected = prices.reduce<pricesByQuarters>((acc, [priceDate, priceRaw]) => {
+    const price = Math.round(priceRaw);
+    const [month, _day, year] = priceDate.split(' ');
+    return acc[year][quarters[month as TMonths]].push(price), acc;
+  }, init);
+
+  const calculated: priceByQuarters = {};
+
+  for (const year in collected) {
+    calculated[year] = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
+    for (const quarter in collected[year]) {
+      var qPrices = collected[year][quarter as Quarters];
+      calculated[year][quarter as Quarters] = Math.round(
+        qPrices.reduce((acc, price) => acc + price, 0) / qPrices.length || 0
+      );
+    }
+  }
+  return calculated;
 };
 
 export const renderAveragePricePerQuarters = (
