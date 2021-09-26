@@ -66,7 +66,7 @@ const main = async () => {
         price_prefix
       );
       await parallel<IItemPropertyDescription, void>(itemInfo.descriptions, giveItemsPrice, {
-        streams: itemInfo.descriptions.length,
+        streams: 2,
         timeout: 100,
       });
     }
