@@ -23,14 +23,16 @@
   cursor: pointer;
 }
 .select__arrow-stp {
+  cursor: pointer;
   position: absolute;
   top: 0;
   right: 0;
   width: 15px;
   height: 15px;
+  transform: translateY(50%);
 }
 .select-stp.active .select__arrow-stp {
-  transform: rotate(180deg);
+  transform: translateY(50%) rotate(180deg);
 }
 .select__option-stp {
   opacity: 0.6;
