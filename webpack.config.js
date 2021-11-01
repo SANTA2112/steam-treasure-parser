@@ -8,9 +8,8 @@ module.exports = {
     index: './src/index.ts',
   },
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: path.resolve(process.cwd(), 'build'),
     filename: 'script.js',
-    chunkFilename: 'script.js',
     publicPath: '/',
   },
   module: {
