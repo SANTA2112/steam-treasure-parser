@@ -1,6 +1,6 @@
 import { options } from 'toastr';
 
-import { TMonths, TCurrencyIds, TCurrencyValues, MonthsQuarter } from './types';
+import { TCurrencyIds, TCurrencyValues, MonthsQuarter } from './types';
 
 export const BASE_URL: string = 'https://steamcommunity.com/market';
 
@@ -37,8 +37,6 @@ export const toastrOptions: typeof options = {
   hideMethod: 'fadeOut',
   positionClass: 'toast-bottom-left',
 };
-
-export const months: TMonths[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export const currencyIds: TCurrencyValues = {
   '1': 'USD',

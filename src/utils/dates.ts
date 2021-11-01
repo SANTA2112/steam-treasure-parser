@@ -1,5 +1,4 @@
-import { months } from '../constants';
-import { PriceValues, TQuantityOfSales } from '../types';
+import { PriceValues, TQuantityOfSales, months } from '../types';
 
 const getPriceIndexByDateSetParams = (prices: PriceValues) => (dates: Date[]) => {
   for (const date of dates) {
