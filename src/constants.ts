@@ -8,7 +8,7 @@ export const PRICE_HISTIRY_URL = (
   appid: string,
   country: string,
   currency: TCurrencyIds,
-  market_hash_name: string
+  market_hash_name: string,
 ): string =>
   `/pricehistory?appid=${appid}&country=${country}&currency=${currency}&market_hash_name=${market_hash_name}`;
 
@@ -16,7 +16,7 @@ export const ITEM_TYPE_URL = (
   appid: string,
   language: string,
   currency: TCurrencyIds,
-  market_hash_name: string
+  market_hash_name: string,
 ): string => `/listings/${appid}/${market_hash_name}/render/?start=0&count=1&language=${language}&currency=${currency}`;
 
 export const ITEM_INFO_URL = (appid: string, market_hash_name: string, resultsCount: number): string =>
