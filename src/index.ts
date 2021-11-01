@@ -1,4 +1,6 @@
 import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
+import './_assets/css/style.css';
 
 import {
   IPriceHistory,
@@ -13,20 +15,14 @@ import {
 
 import { TQuantityOfSales } from './types';
 
-import { doReq } from './API';
-
-import {
-  init,
-  getAveragePricePerQuarters,
-  findItemsInTreause,
-  giveItemsPriceSetParams,
-  parallel,
-  renderAveragePricePerQuarters,
-  getQuantityOfSales,
-  renderQuantityOfSales,
-} from './utils';
+import { doReq } from './api';
 
 import { PRICE_HISTIRY_URL, ITEM_INFO_URL, ITEM_TYPE_URL, toastrOptions } from './constants';
+import { getQuantityOfSales } from './utils/dates';
+import { init } from './utils/init';
+import { renderQuantityOfSales, findItemsInTreause, giveItemsPriceSetParams } from './utils/items';
+import { parallel } from './utils/parallel';
+import { getAveragePricePerQuarters, renderAveragePricePerQuarters } from './utils/prices';
 
 toastr.options = toastrOptions;
 
@@ -36,13 +32,13 @@ const main = async () => {
   const itemPrice: IResponse<IItemInfo | IPriceError> = await doReq(ITEM_INFO_URL(appid, market_hash_name, 1));
 
   const itemPriceHistrory: IResponse<IPriceHistory | IPriceError> = await doReq(
-    PRICE_HISTIRY_URL(appid, country, currency, market_hash_name)
+    PRICE_HISTIRY_URL(appid, country, currency, market_hash_name),
   );
   const itemTypeInfo: IResponse<IItemTypeResponce | IPriceError> = await doReq(
-    ITEM_TYPE_URL(appid, language, currency, market_hash_name)
+    ITEM_TYPE_URL(appid, language, currency, market_hash_name),
   );
 
-  const itemNode: Element | null = document.querySelector('#largeiteminfo_item_name');
+  const itemNode = document.querySelector<HTMLDivElement>('#largeiteminfo_item_name');
 
   if (itemPrice.data.success && itemPriceHistrory.data.success && itemTypeInfo.data.success && itemNode) {
     const { prices, price_prefix, price_suffix } = itemPriceHistrory.data;
@@ -63,7 +59,7 @@ const main = async () => {
     if (itemInfo.descriptions.length !== 0) {
       const giveItemsPrice: (item: IItemPropertyDescription) => Promise<void> = giveItemsPriceSetParams(
         appid,
-        price_prefix
+        price_prefix,
       );
       await parallel<IItemPropertyDescription, void>(itemInfo.descriptions, giveItemsPrice, {
         streams: 2,
