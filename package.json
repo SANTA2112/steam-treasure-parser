@@ -16,17 +16,24 @@
   "author": "SANTA2112 <s.yushmanov777@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.24.0",
     "toastr": "^2.1.4"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.3.0",
+    "@typescript-eslint/parser": "^5.3.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-prettier": "^4.0.0",
     "@types/toastr": "^2.1.39",
     "copy-webpack-plugin": "^9.0.1",
-    "css-loader": "^6.2.0",
-    "style-loader": "^3.2.1",
-    "ts-loader": "^9.2.5",
-    "typescript": "^4.4.2",
-    "webpack": "^5.52.0",
-    "webpack-cli": "^4.8.0"
+    "css-loader": "^6.5.0",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.4.4",
+    "webpack": "^5.61.0",
+    "webpack-cli": "^4.9.1"
   }
 }
