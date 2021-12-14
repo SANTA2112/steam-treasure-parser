@@ -135,7 +135,7 @@ export const findItemsInTreause = (appid: string, items: IItemProperties): IItem
 };
 
 export const giveItemsPriceSetParams =
-  (appid: string, pricePrefix: string) =>
+  (appid: string, pricePrefix: string = '') =>
   async (item: IItemPropertyDescription): Promise<void> => {
     toastr.info(`Getting price for: ${item.value}`);
     item.subitems = await getSubItemsAndPrice(appid, item);

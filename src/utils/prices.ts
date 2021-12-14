@@ -33,10 +33,10 @@ export const getAveragePricePerQuarters = (prices: PriceValues): priceByQuarters
 };
 
 export const renderAveragePricePerQuarters = (
-  pricePrefix: string,
-  priceSuffix: string,
   prices: priceByQuarters,
   itemNode: Element | null,
+  pricePrefix: string = '',
+  priceSuffix: string = '',
 ): void => {
   const container: HTMLDivElement = document.createElement('div');
 
@@ -53,7 +53,7 @@ export const renderAveragePricePerQuarters = (
             class="item-stp"
             style="color: #ffffff"
           >${year}: ${Object.entries(qPrices)
-            .map(([q, price]) => `<div class="item__price-stp">${q}: ${pricePrefix} ${price} ${priceSuffix}</div>`)
+            .map(([q, price]) => `<div class="item__price-stp">${q}: ${pricePrefix}${price} ${priceSuffix}</div>`)
             .join('')}</div
           >
         </div>
