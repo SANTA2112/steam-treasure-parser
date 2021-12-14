@@ -83,6 +83,7 @@ export interface IInit {
   currency: TCurrencyIds;
   language: string;
   country: string;
+  prices: IPriceHistory['prices'];
 }
 
 export interface IItemInfo {
