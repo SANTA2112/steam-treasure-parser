@@ -30,19 +30,15 @@ const main = async () => {
 
   const itemPrice: IResponse<IItemInfo | IPriceError> = await doReq(ITEM_INFO_URL(appid, market_hash_name, 1));
 
-  let pricePrefix;
-  let priceSuffix;
+  let pricePrefix = '';
+  let priceSuffix = '';
   const itemPriceHistroryScript: HTMLScriptElement | undefined = [...document.querySelectorAll('script')].find(
     (script) => script.textContent?.includes('var line1='),
   );
 
   if (itemPriceHistroryScript) {
-    pricePrefix = decodeURIComponent(
-      itemPriceHistroryScript.textContent?.match(/var strFormatPrefix = "(.+?)";/)?.[1] || '',
-    );
-    priceSuffix = decodeURIComponent(
-      itemPriceHistroryScript.textContent?.match(/var strFormatSuffix = "(.+?)";/)?.[1] || '',
-    );
+    pricePrefix = JSON.parse(itemPriceHistroryScript.textContent?.match(/var strFormatPrefix = (.+?);/)?.[1]!);
+    priceSuffix = JSON.parse(itemPriceHistroryScript.textContent?.match(/var strFormatSuffix = (.+?);/)?.[1]!);
   }
 
   const itemTypeInfo: IResponse<IItemTypeResponce | IPriceError> = await doReq(
