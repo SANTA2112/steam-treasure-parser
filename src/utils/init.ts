@@ -1,5 +1,5 @@
 import { IInit, IPriceHistory } from '../interfaces';
-import { Groups, TCurrencyIds } from '../types';
+import { TCurrencyIds } from '../types';
 import { addSelectListener } from './common';
 
 declare global {
@@ -17,7 +17,7 @@ export const init = async (): Promise<IInit> => {
   const parsedString: RegExpMatchArray = globalThis.location.href.match(
     /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>.+)/,
   )!;
-  const { appid, market_hash_name } = parsedString.groups as Groups;
+  const { appid, market_hash_name } = parsedString.groups as Record<string, string>;
 
   const language = window.g_strLanguage || 'english';
   const country = window.g_strCountryCode || 'US';

@@ -1,7 +1,3 @@
-export type Groups = {
-  [key: string]: string;
-};
-
 export type PriceValues = [string, number, string][];
 
 const currencyIds = [
