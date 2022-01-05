@@ -9,9 +9,8 @@ export const getAveragePricePerQuarters = (prices: PriceValues): priceByQuarters
   );
 
   const collected = prices.reduce<pricesByQuarters>((acc, [priceDate, priceRaw]) => {
-    const price = Math.round(priceRaw);
     const [month, , year] = priceDate.split(' ');
-    return acc[year][quarters[month as TMonths]].push(price), acc;
+    return acc[year][quarters[month as TMonths]].push(priceRaw), acc;
   }, init);
 
   const calculated: priceByQuarters = {};
@@ -22,9 +21,9 @@ export const getAveragePricePerQuarters = (prices: PriceValues): priceByQuarters
       for (const quarter in collected[year]) {
         if (Object.prototype.hasOwnProperty.call(collected[year], quarter)) {
           const qPrices = collected[year][quarter as Quarters];
-          calculated[year][quarter as Quarters] = Math.round(
-            qPrices.reduce((acc, price) => acc + price, 0) / qPrices.length || 0,
-          );
+          calculated[year][quarter as Quarters] = +(
+            qPrices.reduce((acc, price) => acc + price, 0) / qPrices.length || 0
+          ).toFixed(2);
         }
       }
     }
