@@ -37,8 +37,12 @@ const main = async () => {
   );
 
   if (itemPriceHistroryScript) {
-    pricePrefix = itemPriceHistroryScript.textContent?.match(/var strFormatPrefix = "(.+?)";/)?.[1];
-    priceSuffix = itemPriceHistroryScript.textContent?.match(/var strFormatSuffix = "(.+?)";/)?.[1];
+    pricePrefix = decodeURIComponent(
+      itemPriceHistroryScript.textContent?.match(/var strFormatPrefix = "(.+?)";/)?.[1] || '',
+    );
+    priceSuffix = decodeURIComponent(
+      itemPriceHistroryScript.textContent?.match(/var strFormatSuffix = "(.+?)";/)?.[1] || '',
+    );
   }
 
   const itemTypeInfo: IResponse<IItemTypeResponce | IPriceError> = await doReq(
