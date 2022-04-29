@@ -82,7 +82,6 @@ export interface IInit {
   market_hash_name: string;
   currency: TCurrencyIds;
   language: string;
-  country: string;
   prices: IPriceHistory['prices'];
 }
 
