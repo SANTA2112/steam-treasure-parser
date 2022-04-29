@@ -1,25 +1,4 @@
-import { Quarters, TCurrencyIds } from './types';
-
-export interface IFetcher<T, R> {
-  (arg: T): Promise<R | R[]>;
-}
-
-export interface IFetchError<T> {
-  message: string;
-  src: T;
-}
-
-export interface IOptions {
-  /** Колличество одновременных запросов */
-  streams?: number;
-  /** Время задержки между запросами в ms */
-  timeout?: number;
-}
-
-export interface IDone<T, R> {
-  results: R[];
-  errors: IFetchError<T>[];
-}
+import { Quarters } from './types';
 
 export interface IPriceHistory {
   success: boolean;
@@ -60,18 +39,6 @@ export interface IItemAssets {
       [key: string]: IItemProperties;
     };
   };
-}
-
-export interface IPriceError {
-  success: false;
-  price_prefix?: string;
-  price_suffix?: string;
-  prices?: false;
-}
-
-export interface IResponse<T> {
-  data: T;
-  status: number;
 }
 
 export interface IInit {
@@ -140,17 +107,9 @@ export interface SteamPrice {
   price_suffix: string;
 }
 
-export interface pricesByQuarters {
-  [key: string]: {
-    [key in Quarters]: number[];
-  };
-}
+export interface pricesByQuarters extends Record<string, Record<Quarters, number[]>> {}
 
-export interface priceByQuarters {
-  [key: string]: {
-    [key in Quarters]: number;
-  };
-}
+export interface priceByQuarters extends Record<string, Record<Quarters, number>> {}
 
 export interface WalletInfo {
   wallet_currency: number;

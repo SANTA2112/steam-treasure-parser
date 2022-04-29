@@ -1,5 +1,24 @@
 /* eslint-disable consistent-return */
-import { IFetcher, IOptions, IDone, IFetchError } from '../interfaces';
+export interface IFetcher<T, R> {
+  (arg: T): Promise<R | R[]>;
+}
+
+export interface IFetchError<T> {
+  message: string;
+  src: T;
+}
+
+export interface IOptions {
+  /** Колличество одновременных запросов */
+  streams?: number;
+  /** Время задержки между запросами в ms */
+  timeout?: number;
+}
+
+export interface IDone<T, R> {
+  results: R[];
+  errors: IFetchError<T>[];
+}
 
 export const parallel = async <T, R>(
   /** Массив со входными данными */
