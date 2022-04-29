@@ -10,6 +10,7 @@ import { init } from './utils/init';
 import { renderQuantityOfSales, findItemsInTreause, giveItemsPriceSetParams } from './utils/items';
 import { parallel } from './utils/parallel';
 import { getAveragePricePerQuarters, renderAveragePricePerQuarters } from './utils/prices';
+import { fetchItemPrice } from './api';
 
 toastr.options = toastrOptions;
 
@@ -29,10 +30,14 @@ const main = async () => {
 
   const itemNode = document.querySelector<HTMLDivElement>('#largeiteminfo_item_name');
 
+  const itemPrice = Number.isNaN(item_price)
+    ? await fetchItemPrice(country, language, currency, item_nameid).then((resp) => resp.lowest_sell_order)
+    : item_price;
+
   if (itemNode) {
     const averagePricePerQuarters = getAveragePricePerQuarters(prices);
     const quantityOfSales = getQuantityOfSales(prices);
-    itemNode.insertAdjacentHTML('beforeend', `<div>Price: ${Number(item_price) / 100} ${price_suffix}</div>`);
+    itemNode.insertAdjacentHTML('beforeend', `<div>Price: ${Number(itemPrice) / 100} ${price_suffix}</div>`);
     renderAveragePricePerQuarters(averagePricePerQuarters, itemNode, price_suffix);
     renderQuantityOfSales(quantityOfSales, itemNode);
 
