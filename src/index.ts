@@ -15,18 +15,7 @@ import { fetchItemPrice } from './api';
 toastr.options = toastrOptions;
 
 const main = async () => {
-  const {
-    appid,
-    currency,
-    language,
-    country,
-    prices,
-    item_nameid,
-    item_info,
-    item_price,
-    market_hash_name,
-    price_suffix,
-  } = init();
+  const { appid, currency, language, country, prices, item_nameid, item_info, item_price, price_suffix } = init();
 
   const itemNode = document.querySelector<HTMLDivElement>('#largeiteminfo_item_name');
 
