@@ -1,26 +1,6 @@
 import { options } from 'toastr';
 
-import { TCurrencyIds, TCurrencyValues, MonthsQuarter } from './types';
-
-export const BASE_URL: string = 'https://steamcommunity.com/market';
-
-export const PRICE_HISTIRY_URL = (
-  appid: string,
-  country: string,
-  currency: TCurrencyIds,
-  market_hash_name: string,
-): string =>
-  `/pricehistory?appid=${appid}&country=${country}&currency=${currency}&market_hash_name=${market_hash_name}`;
-
-export const ITEM_TYPE_URL = (
-  appid: string,
-  language: string,
-  currency: TCurrencyIds,
-  market_hash_name: string,
-): string => `/listings/${appid}/${market_hash_name}/render/?start=0&count=1&language=${language}&currency=${currency}`;
-
-export const ITEM_INFO_URL = (appid: string, market_hash_name: string, resultsCount: number): string =>
-  `/search/render/?search_descriptions=1&count=${resultsCount}&appid=${appid}&norender=1&query=${market_hash_name}`;
+import { TCurrencyValues, MonthsQuarter } from './types';
 
 export const toastrOptions: typeof options = {
   closeButton: true,
