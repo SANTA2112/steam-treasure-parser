@@ -1,10 +1,9 @@
 import toastr from 'toastr';
-import { doReq } from '../api';
-import { ITEM_INFO_URL, BASE_URL } from '../constants';
-import { IResponse, IItemInfo, IPriceError, IItemProperties, IItemPropertyDescription, ISubItem } from '../interfaces';
+import { fetchItemInfo } from '../api';
+import { IItemProperties, IItemPropertyDescription, ISubItem } from '../interfaces';
 import { TQuantityOfSales } from '../types';
 
-const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescription): void => {
+const createItem = (appid: string, item: IItemPropertyDescription): void => {
   if (item.subitems.length !== 0) {
     const container: HTMLDivElement = document.createElement('div');
 
@@ -25,10 +24,10 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
           </div>
           <a
             class="item-stp"
-            href="${BASE_URL}/listings/${appid}/${el.market_hash_name}"
+            href="https://steamcommunity.com/market/listings/${appid}/${el.market_hash_name}"
             target="_blank"
             style="color: #${item.color}"
-          >${el.name}<span class="item__price-stp">${pricePrefix} ${el.price}</span></a
+          >${el.name}<span class="item__price-stp"> ${el.price}</span></a
           >
         </div>
       `,
@@ -50,10 +49,10 @@ const createItem = (appid: string, pricePrefix: string, item: IItemPropertyDescr
       </div>
       <a
         class="item-stp"
-        href="${BASE_URL}/listings/${appid}/${item.market_hash_name}"
+        href="https://steamcommunity.com/market/listings/${appid}/${item.market_hash_name}"
         target="_blank"
         style="color: #${item.color}"
-      >${item.value}<span class="item__price-stp">${pricePrefix} ${item.price}</span></a
+      >${item.value}<span class="item__price-stp"> ${item.price}</span></a
       >
     `;
     item.domNode = container;
@@ -76,9 +75,9 @@ const getSubItemsAndPrice = async (appid: string, item: IItemPropertyDescription
   switch (appid) {
     case '730':
     case '440':
-      return getItemInfo(appid, item.value, 100).then((r) =>
-        r.data.success
-          ? r.data.results
+      return fetchItemInfo(appid, item.value, 100).then((r) =>
+        r.success
+          ? r.results
               .filter((subItem) => subItem.name.includes(item.value))
               .sort((a, b) => {
                 if (a.sell_price > b.sell_price) return 1;
@@ -97,12 +96,6 @@ const getSubItemsAndPrice = async (appid: string, item: IItemPropertyDescription
       return [];
   }
 };
-
-export const getItemInfo = (
-  appid: string,
-  itemName: string,
-  count: number = 1,
-): Promise<IResponse<IItemInfo | IPriceError>> => doReq(ITEM_INFO_URL(appid, itemName, count));
 
 export const findItemsInTreause = (appid: string, items: IItemProperties): IItemPropertyDescription[] => {
   switch (appid) {
@@ -135,13 +128,13 @@ export const findItemsInTreause = (appid: string, items: IItemProperties): IItem
 };
 
 export const giveItemsPriceSetParams =
-  (appid: string, pricePrefix: string = '') =>
+  (appid: string) =>
   async (item: IItemPropertyDescription): Promise<void> => {
     toastr.info(`Getting price for: ${item.value}`);
     item.subitems = await getSubItemsAndPrice(appid, item);
 
     if (item.subitems.length === 0) {
-      const itemInfo = await getItemInfo(appid, item.value).then((r) => r.data);
+      const itemInfo = await fetchItemInfo(appid, item.value);
       if (itemInfo.success) {
         item.image = `https://community.akamai.steamstatic.com/economy/image/${itemInfo.results[0].asset_description.icon_url}`;
         item.price = itemInfo.results[0].sale_price_text;
@@ -149,7 +142,7 @@ export const giveItemsPriceSetParams =
       }
     }
 
-    createItem(appid, pricePrefix, item);
+    createItem(appid, item);
     render(item);
   };
 
