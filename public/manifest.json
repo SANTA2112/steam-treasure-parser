@@ -2,7 +2,7 @@
   "name": "Steam Treasure Parser",
   "description": "Parsing items price in treasure",
   "version": "1.0.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "author": "SANTA2112",
   "icons": {
     "16": "icon16.png",
@@ -12,9 +12,14 @@
   "content_scripts": [
     {
       "matches": ["https://*.steamcommunity.com/market/listings/*"],
-      "js": ["contentscript.js"],
+      "js": ["/contentscript.js"],
       "run_at": "document_end"
     }
   ],
-  "web_accessible_resources": ["script.js"]
+  "web_accessible_resources": [
+    {
+      "resources": ["/script.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
