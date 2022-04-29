@@ -15,11 +15,8 @@ const handleResponse = <T>(response: AxiosResponse<T>): AxiosResponse<T> => resp
 const handleError = (error: AxiosError): IResponse<IPriceError> => {
   toastr.error(error.message);
   if (error.response) {
-    console.log(error.response.data);
-    console.log(error.response.status);
     return { data: error.response.data || { success: false }, status: error.response.status };
   }
-  console.log(error.message);
   return { data: { success: false }, status: 500 };
 };
 
