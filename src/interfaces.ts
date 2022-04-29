@@ -84,6 +84,7 @@ export interface IInit {
   language: string;
   country: string;
   prices: IPriceHistory['prices'];
+  item_nameid: string;
 }
 
 export interface IItemInfo {

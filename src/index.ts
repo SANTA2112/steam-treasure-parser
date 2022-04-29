@@ -26,7 +26,7 @@ import { getAveragePricePerQuarters, renderAveragePricePerQuarters } from './uti
 toastr.options = toastrOptions;
 
 const main = async () => {
-  const { appid, currency, market_hash_name, language, country, prices } = init();
+  const { appid, currency, market_hash_name, language, country, prices, item_nameid } = init();
 
   const itemPrice: IResponse<IItemInfo | IPriceError> = await doReq(ITEM_INFO_URL(appid, market_hash_name, 1));
 

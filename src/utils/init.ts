@@ -20,8 +20,9 @@ export const init = (): IInit => {
   const country = window.g_strCountryCode || 'US';
   const currency = window.g_nWalletCurrency || 1;
   const prices = window.g_plotPriceHistory?.data?.[0] || [];
+  const item_nameid = window.document.body.innerHTML.match(/Market_LoadOrderSpread\(\s*(\d+)\s*\)/)?.[1] || '';
 
   addSelectListener();
 
-  return { appid, market_hash_name, currency, language, country, prices };
+  return { appid, market_hash_name, currency, language, country, prices, item_nameid };
 };
