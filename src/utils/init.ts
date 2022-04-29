@@ -13,11 +13,8 @@ declare global {
   }
 }
 
-export const init = async (): Promise<IInit> => {
-  const parsedString: RegExpMatchArray = globalThis.location.href.match(
-    /https?:\/\/steamcommunity.com\/market\/listings\/(?<appid>\d+)\/(?<market_hash_name>.+)/,
-  )!;
-  const { appid, market_hash_name } = parsedString.groups as Record<string, string>;
+export const init = (): IInit => {
+  const [, , appid, market_hash_name]: RegExpMatchArray = window.location.pathname.split('/');
 
   const language = window.g_strLanguage || 'english';
   const country = window.g_strCountryCode || 'US';
