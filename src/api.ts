@@ -1,25 +1,36 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, AxiosInstance } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import toastr from 'toastr';
 
-import { IResponse, IPriceError } from './interfaces';
+import { IItemInfo, IItemAssets, SteamPrice } from './interfaces';
 
-import { BASE_URL } from './constants';
+import { TCurrencyIds } from './types';
 
 const config: AxiosRequestConfig = {
-  baseURL: BASE_URL,
+  baseURL: 'https://steamcommunity.com/market',
   withCredentials: true,
 };
 
-const handleResponse = <T>(response: AxiosResponse<T>): AxiosResponse<T> => response;
+const instance = axios.create(config);
 
-const handleError = (error: AxiosError): IResponse<IPriceError> => {
-  toastr.error(error.message);
-  if (error.response) {
-    return { data: error.response.data || { success: false }, status: error.response.status };
-  }
-  return { data: { success: false }, status: 500 };
+instance.interceptors.response.use(
+  (response) => response.data,
+  (error) => (toastr.error(error.message), error),
+);
+
+export const fetchItemType = (appid: string, language: string, currency: TCurrencyIds, market_hash_name: string) => {
+  return instance.get<void, IItemAssets>(
+    `/listings/${appid}/${market_hash_name}/render/?start=0&count=1&language=${language}&currency=${currency}`,
+  );
 };
 
-const fetchAPI: AxiosInstance = axios.create(config);
+export const fetchItemInfo = (appid: string, market_hash_name: string, resultsCount: number = 1) => {
+  return instance.get<void, IItemInfo>(
+    `/search/render/?search_descriptions=1&count=${resultsCount}&appid=${appid}&norender=1&query=${market_hash_name}`,
+  );
+};
 
-export const doReq = (url: string) => fetchAPI.get(url).then(handleResponse).catch(handleError);
+export const fetchItemPrice = (country: string, language: string, currency: number, item_nameid: string) => {
+  return instance.get<void, SteamPrice>(
+    `/itemordershistogram?country=${country}&language=${language}&currency=${currency}&item_nameid=${item_nameid}&two_factor=0`,
+  );
+};
