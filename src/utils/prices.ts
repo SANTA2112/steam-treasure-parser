@@ -2,7 +2,7 @@ import { quarters } from '../constants';
 import { priceByQuarters, pricesByQuarters } from '../interfaces';
 import { PriceValues, TMonths, Quarters } from '../types';
 
-export const getAveragePricePerQuarters = (prices: PriceValues): priceByQuarters => {
+export const getAveragePricePerQuarters = (prices: PriceValues) => {
   const init = [...new Set(prices.map(([priceDate]) => priceDate.split(' ')[2]))].reduce<pricesByQuarters>(
     (acc, year) => ((acc[year] = { Q1: [], Q2: [], Q3: [], Q4: [] }), acc),
     {},
