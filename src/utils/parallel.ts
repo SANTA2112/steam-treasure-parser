@@ -13,7 +13,10 @@ export const parallel = async <T, R>(
   const errors: IFetchError<T>[] = [];
   const tasks: Promise<any>[] = [];
 
-  const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+  const wait = (ms: number): Promise<void> =>
+    new Promise((r) => {
+      setTimeout(r, ms);
+    });
 
   const run = async (): Promise<any> => {
     if (source.length === 0) return;
