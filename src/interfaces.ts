@@ -54,13 +54,10 @@ export interface IItemProperties {
   market_hash_name: string;
 }
 
-export interface IItemTypeResponce {
-  success: boolean;
-  assets: {
+export interface IItemAssets {
+  [key: string]: {
     [key: string]: {
-      [key: string]: {
-        [key: string]: IItemProperties;
-      };
+      [key: string]: IItemProperties;
     };
   };
 }
@@ -80,11 +77,14 @@ export interface IResponse<T> {
 export interface IInit {
   appid: string;
   market_hash_name: string;
-  currency: TCurrencyIds;
+  currency: number;
   language: string;
   country: string;
   prices: IPriceHistory['prices'];
   item_nameid: string;
+  item_info: IItemProperties;
+  price_suffix: string;
+  item_price: number;
 }
 
 export interface IItemInfo {
@@ -131,6 +131,15 @@ interface IAssetDescription {
   commodity: number;
 }
 
+export interface SteamPrice {
+  highest_buy_order: string;
+  lowest_sell_order: string;
+  buy_order_graph: [number, number, string][];
+  sell_order_graph: [number, number, string][];
+  price_prefix: string;
+  price_suffix: string;
+}
+
 export interface pricesByQuarters {
   [key: string]: {
     [key in Quarters]: number[];
@@ -141,4 +150,61 @@ export interface priceByQuarters {
   [key: string]: {
     [key in Quarters]: number;
   };
+}
+
+export interface WalletInfo {
+  wallet_currency: number;
+  wallet_country: string;
+  wallet_state: string;
+  wallet_fee: string;
+  wallet_fee_minimum: string;
+  wallet_fee_percent: string;
+  wallet_publisher_fee_percent_default: string;
+  wallet_fee_base: string;
+  wallet_balance: string;
+  wallet_delayed_balance: string;
+  wallet_max_balance: string;
+  wallet_trade_max_balance: string;
+  success: number;
+  rwgrsn: number;
+}
+
+export interface CurrencyData {
+  strCode: string;
+  eCurrencyCode: number;
+  strSymbol: string;
+  bSymbolIsPrefix: boolean;
+  bWholeUnitsOnly: boolean;
+  strDecimalSymbol: string;
+  strThousandsSeparator: string;
+  strSymbolAndNumberSeparator: string;
+}
+
+interface ListingAsset {
+  currency: number;
+  appid: number;
+  contextid: string;
+  id: string;
+  amount: string;
+}
+
+export interface ListingInfo {
+  listingid: string;
+  price: number;
+  fee: number;
+  publisher_fee_app: number;
+  publisher_fee_percent: string;
+  currencyid: number;
+  steam_fee: number;
+  publisher_fee: number;
+  converted_price: number;
+  converted_fee: number;
+  converted_currencyid: number;
+  converted_steam_fee: number;
+  converted_publisher_fee: number;
+  converted_price_per_unit: number;
+  converted_fee_per_unit: number;
+  converted_steam_fee_per_unit: number;
+  converted_publisher_fee_per_unit: number;
+  asset: ListingAsset;
 }
