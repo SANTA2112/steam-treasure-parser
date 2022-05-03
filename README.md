@@ -2,10 +2,6 @@
 
 [Download link .zip](https://disk.yandex.ru/d/K_InJBMu8nF9Fg)
 
-### Run development mode
-
-> npm start
-
 ### Production build
 
 > npm run build
