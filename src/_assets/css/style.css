@@ -46,8 +46,17 @@
   display: none;
 }
 .select-stp.active .select__options-stp {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 0;
 }
 .item__price-stp {
   color: #2fff00;
+}
+.item-stp {
+  transition: 0.3s filter;
+}
+.item-stp:hover {
+  filter: brightness(1.4);
 }
