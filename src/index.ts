@@ -8,11 +8,16 @@ import { toastrOptions } from './constants';
 import { getQuantityOfSales } from './utils/dates';
 import { init } from './utils/init';
 import { renderQuantityOfSales, findItemsInTreause, giveItemsPriceSetParams } from './utils/items';
-import { parallel } from './utils/parallel';
+import { ErrorHandlerArg, parallel } from './utils/parallel';
 import { getAveragePricePerQuarters, renderAveragePricePerQuarters } from './utils/prices';
 import { fetchItemPrice } from './api';
 
 toastr.options = toastrOptions;
+
+const errorHandler = (args: ErrorHandlerArg<IItemPropertyDescription>) => {
+  const { error, item } = args;
+  console.log(`FAIL ${item.market_hash_name} - (${error.message})`);
+};
 
 const main = async () => {
   const { appid, currency, language, country, prices, item_nameid, item_info, item_price, price_suffix } = init();
@@ -34,9 +39,12 @@ const main = async () => {
 
     if (item_info.descriptions.length !== 0) {
       const giveItemsPrice = giveItemsPriceSetParams(appid);
-      await parallel<IItemPropertyDescription, void>(item_info.descriptions, giveItemsPrice, {
-        streams: 2,
-        timeout: 100,
+      await parallel<IItemPropertyDescription, void>(item_info.descriptions, {
+        handler: giveItemsPrice,
+        concurrency: 1,
+        timeout: 3500,
+        errorHandler,
+        needResults: false,
       });
     }
   }
