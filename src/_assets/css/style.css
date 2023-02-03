@@ -60,9 +60,11 @@
   color: #2fff00;
 }
 .item-stp {
+  transition: 0.3s filter;
+}
+.item-stp__item {
   display: flex;
   justify-content: space-between;
-  transition: 0.3s filter;
   white-space: nowrap;
 }
 .item-stp:hover {

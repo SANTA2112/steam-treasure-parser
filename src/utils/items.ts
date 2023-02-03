@@ -23,7 +23,7 @@ const createItem = (appid: string, item: IItemPropertyDescription): void => {
             />
           </div>
           <a
-            class="item-stp"
+            class="item-stp item-stp__item"
             href="https://steamcommunity.com/market/listings/${appid}/${el.market_hash_name}"
             target="_blank"
             style="color: #${item.color}"
