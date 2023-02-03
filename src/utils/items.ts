@@ -27,7 +27,7 @@ const createItem = (appid: string, item: IItemPropertyDescription): void => {
             href="https://steamcommunity.com/market/listings/${appid}/${el.market_hash_name}"
             target="_blank"
             style="color: #${item.color}"
-          >${el.name}<span class="item__price-stp"> ${el.price}</span></a
+          ><span class="item__name-stp">${el.name}</span><span class="item__price-stp"> ${el.price}</span></a
           >
         </div>
       `,

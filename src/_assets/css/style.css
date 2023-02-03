@@ -51,11 +51,18 @@
   gap: 4px;
   margin: 4px 0;
 }
+.item__name-stp {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 .item__price-stp {
   color: #2fff00;
 }
 .item-stp {
+  display: flex;
+  justify-content: space-between;
   transition: 0.3s filter;
+  white-space: nowrap;
 }
 .item-stp:hover {
   filter: brightness(1.4);
