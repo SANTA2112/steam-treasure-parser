@@ -20,27 +20,20 @@ const getLastYear = (today: Date) => new Date(today.getFullYear() - 1, today.get
 
 const getDatesRange = (date1: Date, date2: Date) => {
   const dates = [];
-  const range = Math.floor((date1.getTime() - date2.getTime()) / 1000 / 60 / 60 / 24);
+  const range = Math.floor((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24));
   let currentDate = date1;
 
   for (let i = 0; i < range; i++) {
-    dates.push(getLastDay(currentDate));
-    currentDate = getLastDay(currentDate);
+    const lastDay = getLastDay(currentDate);
+    dates.push(lastDay);
+    currentDate = lastDay;
   }
 
   return dates;
 };
 
 export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
-  const tempDate = new Date();
-  const date = new Date(
-    tempDate.getUTCFullYear(),
-    tempDate.getUTCMonth(),
-    tempDate.getUTCDate(),
-    tempDate.getUTCHours(),
-    tempDate.getUTCMinutes(),
-    tempDate.getUTCSeconds(),
-  );
+  const date = new Date();
 
   const getPriceIndexByDate = getPriceIndexByDateSetParams(prices);
 
@@ -49,9 +42,11 @@ export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
     getLastWeek(date),
     getLastMonth(date),
     getLastYear(date),
-  ]
-    .map((neededDate) => getPriceIndexByDate(getDatesRange(date, neededDate).reverse()))
-    .map((index) => (index !== -1 ? prices.slice(index).reduce((a, [, , quantity]) => +quantity + a, 0) : 0));
+  ].map((neededDate) => {
+    const datesRange = getDatesRange(date, neededDate).reverse();
+    const index = getPriceIndexByDate(datesRange);
+    return index !== -1 ? prices.slice(index).reduce((a, [, , quantity]) => +quantity + a, 0) : 0;
+  });
 
   return {
     day: salesPerDay.toLocaleString(),

@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: {
     index: './src/index.ts',
   },
@@ -25,9 +25,13 @@ module.exports = {
       },
     ],
   },
-  devtool: process.env.MODE === 'production' ? false : 'inline-source-map',
+  devtool: false,
   resolve: {
     extensions: ['.ts', '.js'],
   },
-  plugins: [new webpack.ProgressPlugin(), new CopyPlugin({ patterns: [{ from: 'public', to: '' }] })],
+  plugins: [
+    new webpack.ProgressPlugin(),
+    new CopyPlugin({ patterns: [{ from: 'public', to: '' }] }),
+    new webpack.optimize.ModuleConcatenationPlugin(),
+  ],
 };

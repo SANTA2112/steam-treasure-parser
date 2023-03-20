@@ -22,16 +22,23 @@ const errorHandler = (args: ErrorHandlerArg<IItemPropertyDescription>) => {
 const main = async () => {
   const { appid, currency, language, country, prices, item_nameid, item_info, item_price, price_suffix } = init();
 
-  const itemNode = document.querySelector<HTMLDivElement>('#largeiteminfo_item_name');
+  const itemNode = document.querySelector('#largeiteminfo_item_name');
 
-  const itemPrice = Number.isNaN(item_price)
-    ? await fetchItemPrice(country, language, currency, item_nameid).then((resp) => resp.lowest_sell_order)
-    : item_price;
+  let itemPriceValue = item_price;
+  if (Number.isNaN(item_price)) {
+    const itemPriceResponse = await fetchItemPrice(country, language, currency, item_nameid);
+    itemPriceValue = Number(itemPriceResponse.lowest_sell_order);
+  }
 
   if (itemNode) {
     const averagePricePerQuarters = getAveragePricePerQuarters(prices);
     const quantityOfSales = getQuantityOfSales(prices);
-    itemNode.insertAdjacentHTML('beforeend', `<div>Price: ${Number(itemPrice) / 100} ${price_suffix}</div>`);
+    itemNode.insertAdjacentHTML(
+      'beforeend',
+      `<div>
+        Price: ${Number(itemPriceValue) / 100} ${price_suffix}
+      </div>`,
+    );
     renderAveragePricePerQuarters(averagePricePerQuarters, itemNode, price_suffix);
     renderQuantityOfSales(quantityOfSales, itemNode);
 
