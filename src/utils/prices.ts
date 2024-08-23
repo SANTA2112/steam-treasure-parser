@@ -1,30 +1,22 @@
-import { quarters } from '../constants';
+import { getQuarter } from 'date-fns/getQuarter';
 import { priceByQuarters, pricesByQuarters } from '../interfaces';
-import { PriceValues, TMonths, Quarters } from '../types';
+import { Quarters, FormatedSales } from '../types';
 
-export const getAveragePricePerQuarters = (prices: PriceValues) => {
-  const init: pricesByQuarters = {};
-  for (const [priceDate] of prices) {
-    const year = priceDate.split(' ')[2];
-    if (!init[year]) {
-      init[year] = { Q1: [], Q2: [], Q3: [], Q4: [] };
-    }
-  }
-
+export const getAveragePricePerQuarters = (sales: FormatedSales) => {
   const collected: pricesByQuarters = {};
-  for (const [priceDate, priceRaw] of prices) {
-    const [month, , year] = priceDate.split(' ');
-    const quarter = quarters[month as TMonths];
+  for (const sale of sales) {
+    const [year] = sale.date.split('-');
+    const quarter = getQuarter(sale.date).toString();
     if (!collected[year]) {
-      collected[year] = { Q1: [], Q2: [], Q3: [], Q4: [] };
+      collected[year] = { '1': [], '2': [], '3': [], '4': [] };
     }
-    collected[year][quarter].push(priceRaw);
+    collected[year][quarter as Quarters].push(sale.price);
   }
 
   const calculated: priceByQuarters = {};
   for (const year in collected) {
     if (year in collected) {
-      calculated[year] = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
+      calculated[year] = { '1': 0, '2': 0, '3': 0, '4': 0 };
       for (const quarter in collected[year]) {
         if (quarter in collected[year]) {
           const qPrices = collected[year][quarter as Quarters];
@@ -36,6 +28,7 @@ export const getAveragePricePerQuarters = (prices: PriceValues) => {
   }
   return calculated;
 };
+
 export const renderAveragePricePerQuarters = (
   prices: priceByQuarters,
   itemNode: Element | null,
@@ -60,4 +53,13 @@ export const renderAveragePricePerQuarters = (
       <div class="select__label-stp" style="color: #ffffff">Prices per quarters</div>
       <div class="select__options-stp">${options}</div>`;
   itemNode?.insertAdjacentElement('beforeend', container);
+};
+
+export const renderPriceValue = (itemNode: Element, price: number, priceSuffix: string) => {
+  return itemNode.insertAdjacentHTML(
+    'beforeend',
+    `<div>
+      Price: ${price} ${priceSuffix}
+    </div>`,
+  );
 };

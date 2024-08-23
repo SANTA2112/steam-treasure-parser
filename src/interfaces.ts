@@ -1,4 +1,4 @@
-import { Quarters } from './types';
+import { FormatedSales, Quarters } from './types';
 
 export interface IPriceHistory {
   success: boolean;
@@ -47,7 +47,7 @@ export interface IInit {
   currency: number;
   language: string;
   country: string;
-  prices: IPriceHistory['prices'];
+  prices: FormatedSales;
   item_nameid: string;
   item_info: IItemProperties;
   price_suffix: string;

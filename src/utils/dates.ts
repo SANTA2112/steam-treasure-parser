@@ -1,53 +1,47 @@
-import { PriceValues, TQuantityOfSales, months } from '../types';
+import { eachDayOfInterval } from 'date-fns/eachDayOfInterval';
+import { format } from 'date-fns/format';
+import { addHours } from 'date-fns/addHours';
+import { subYears } from 'date-fns/subYears';
+import { subMonths } from 'date-fns/subMonths';
+import { subWeeks } from 'date-fns/subWeeks';
 
-const getPriceIndexByDateSetParams = (prices: PriceValues) => (dates: Date[]) => {
-  for (const date of dates) {
-    const index = prices.findIndex(([priceDate]) => {
-      const [monthPrice, dayPrice, yearPrice] = priceDate.split(' ');
-      return (
-        +dayPrice === date.getDate() && monthPrice === months[date.getMonth()] && +yearPrice === date.getFullYear()
-      );
-    });
-    if (index !== -1) return index;
-  }
-  return -1;
-};
+import { FormatedSales, Sales, months } from '../types';
 
-const getLastDay = (today: Date) => new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
-const getLastWeek = (today: Date) => new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
-const getLastMonth = (today: Date) => new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
-const getLastYear = (today: Date) => new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+export const changeSalesDateByGMT = (sales: Sales): FormatedSales => {
+  const timezoneOffset = -(new Date().getTimezoneOffset() / 60);
 
-const getDatesRange = (date1: Date, date2: Date) => {
-  const dates = [];
-  const range = Math.floor((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24));
-  let currentDate = date1;
+  return sales.map(([date, price, count]) => {
+    const [month, day, year, hour] = date.split(' ');
+    const dateObject = new Date(
+      +year,
+      months.findIndex((el) => el === month),
+      +day,
+      +hour.replace(':', ''),
+    );
+    const formattedDate = format(addHours(dateObject, timezoneOffset), 'yyyy-MM-dd');
 
-  for (let i = 0; i < range; i++) {
-    const lastDay = getLastDay(currentDate);
-    dates.push(lastDay);
-    currentDate = lastDay;
-  }
-
-  return dates;
-};
-
-export const getQuantityOfSales = (prices: PriceValues): TQuantityOfSales => {
-  const date = new Date();
-
-  const getPriceIndexByDate = getPriceIndexByDateSetParams(prices);
-
-  const [salesPerDay, salesPerWeek, salesPerMonth, salesPerYear] = [
-    getLastDay(date),
-    getLastWeek(date),
-    getLastMonth(date),
-    getLastYear(date),
-  ].map((neededDate) => {
-    const datesRange = getDatesRange(date, neededDate).reverse();
-    const index = getPriceIndexByDate(datesRange);
-    return index !== -1 ? prices.slice(index).reduce((a, [, , quantity]) => +quantity + a, 0) : 0;
+    return { date: formattedDate, price, count: +count };
   });
+};
 
+const getDatesRange = (start: Date | number | string, end: Date | number | string, dateFormat: string) => {
+  const range = eachDayOfInterval({ start, end });
+  return range.map((date) => format(date, dateFormat));
+};
+
+const getQuantityInRange = (sales: FormatedSales) => (dates: string[]) => {
+  return sales.filter((sale) => dates.includes(sale.date)).reduce((quantity, sale) => quantity + sale.count, 0);
+};
+
+export const getQuantityOfSales = (sales: FormatedSales) => {
+  const hostedGetQuantityInRange = getQuantityInRange(sales);
+  const currentDate = format(Date.now(), 'yyyy-MM-dd');
+  const [salesPerDay, salesPerWeek, salesPerMonth, salesPerYear] = [
+    hostedGetQuantityInRange([currentDate]),
+    hostedGetQuantityInRange(getDatesRange(subWeeks(currentDate, 1), currentDate, 'yyyy-MM-dd')),
+    hostedGetQuantityInRange(getDatesRange(subMonths(currentDate, 1), currentDate, 'yyyy-MM-dd')),
+    hostedGetQuantityInRange(getDatesRange(subYears(currentDate, 1), currentDate, 'yyyy-MM-dd')),
+  ];
   return {
     day: salesPerDay.toLocaleString(),
     week: salesPerWeek.toLocaleString(),
