@@ -9,8 +9,14 @@ import { getQuantityOfSales } from './utils/dates';
 import { init } from './utils/init';
 import { renderQuantityOfSales, findItemsInTreause, giveItemsPriceSetParams } from './utils/items';
 import { ErrorHandlerArg, parallel } from './utils/parallel';
-import { getAveragePricePerQuarters, renderAveragePricePerQuarters, renderPriceValue } from './utils/prices';
+import {
+  getAveragePricePerQuarters,
+  renderAveragePricePerQuarters,
+  renderPriceValue,
+  renderSalesRangeSlider,
+} from './utils/prices';
 import { fetchItemPrice } from './api';
+import { addRangeSliderScript } from './utils/common';
 
 toastr.options = toastrOptions;
 
@@ -36,6 +42,8 @@ const main = async () => {
     renderPriceValue(itemNode, Number(itemPriceValue) / 100, price_suffix);
     renderAveragePricePerQuarters(averagePricePerQuarters, itemNode, price_suffix);
     renderQuantityOfSales(quantityOfSales, itemNode);
+    renderSalesRangeSlider(itemNode);
+    addRangeSliderScript(prices);
 
     item_info.descriptions = findItemsInTreause(appid, item_info);
 
