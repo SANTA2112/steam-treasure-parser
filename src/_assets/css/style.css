@@ -70,3 +70,69 @@
 .item-stp:hover {
   filter: brightness(1.4);
 }
+/* Range Slider Styles */
+::selection {
+  color: #fff;
+  background: #17a2b8;
+}
+.range-slider-stp {
+  color: #fff;
+}
+.date-wrapper-stp {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-block: 10px;
+}
+.date-wrapper-stp .separator-stp {
+  text-align: center;
+  margin-inline: 30px;
+}
+.progress-bar-stp {
+  height: 5px;
+  position: relative;
+  background: #ddd;
+  border-radius: 5px;
+}
+.progress-bar-stp .progress-stp {
+  height: 100%;
+  left: 0%;
+  right: 0%;
+  position: absolute;
+  border-radius: 5px;
+  background: #17a2b8;
+}
+.range-inputs-stp {
+  position: relative;
+  margin-bottom: 10px;
+}
+.range-inputs-stp .range-input-stp {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  top: -6px;
+  background: none;
+  pointer-events: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+.range-input-stp::-webkit-slider-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: #17a2b8;
+  pointer-events: auto;
+  -webkit-appearance: none;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+}
+.range-input-stp::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border: none;
+  border-radius: 50%;
+  background: #17a2b8;
+  pointer-events: auto;
+  -moz-appearance: none;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+}
