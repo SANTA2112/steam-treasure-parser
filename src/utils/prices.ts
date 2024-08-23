@@ -63,3 +63,26 @@ export const renderPriceValue = (itemNode: Element, price: number, priceSuffix: 
     </div>`,
   );
 };
+
+export const renderSalesRangeSlider = (itemNode: Element) => {
+  return itemNode.insertAdjacentHTML(
+    'beforeend',
+    `<div class="range-slider-stp">
+      <div class="date-wrapper-stp">
+        <div class="date-info-stp start_date" data-value="0"></div>
+        <div class="separator-stp">-</div>
+        <div class="date-info-stp end_date-stp" data-value="0"></div>
+      </div>
+      <div class="progress-bar-stp">
+        <div class="progress-stp"></div>
+      </div>
+      <div class="range-inputs-stp">
+        <input type="range" class="range-input-stp range-min-stp" min="0" max="0" value="0" step="1" />
+        <input type="range" class="range-input-stp range-max-stp" min="0" max="0" value="0" step="1" />
+      </div>
+      <div class="total-info-stp">
+        <span class="total-text-stp">Total sales: </span><span class="total-value-stp">0</span>
+      </div>
+    </div>`,
+  );
+};
