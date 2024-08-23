@@ -15,6 +15,7 @@
   "author": "SANTA2112 <s.yushmanov777@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "date-fns": "^3.6.0",
     "ky": "^0.33.2",
     "toastr": "^2.1.4"
   },
