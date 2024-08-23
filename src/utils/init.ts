@@ -1,5 +1,6 @@
 import { CurrencyData, IInit, IItemAssets, IPriceHistory, ListingInfo, WalletInfo } from '../interfaces';
 import { addSelectListener } from './common';
+import { changeSalesDateByGMT } from './dates';
 
 declare global {
   interface Window {
@@ -21,7 +22,7 @@ export const init = (): IInit => {
   const language = window.g_strLanguage || 'english';
   const country = window.g_strCountryCode || 'US';
   const currency = window.g_rgWalletInfo?.['wallet_currency'] || 1;
-  const prices = window.g_plotPriceHistory?.data?.[0] || [];
+  const prices = changeSalesDateByGMT(window.g_plotPriceHistory?.data?.[0] || []);
   const { converted_price, converted_fee } = window.g_rgListingInfo[Object.keys(window.g_rgListingInfo)[0]];
   const item_price = converted_price + converted_fee;
   const item_nameid = window.document.body.innerHTML.match(/Market_LoadOrderSpread\(\s*(\d+)\s*\)/)?.[1] || '';
