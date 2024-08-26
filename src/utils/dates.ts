@@ -29,23 +29,17 @@ const getDatesRange = (start: Date | number | string, end: Date | number | strin
   return range.map((date) => format(date, dateFormat));
 };
 
-const getQuantityInRange = (sales: FormatedSales) => (dates: string[]) => {
+const getQuantityInRange = (sales: FormatedSales, dates: string[]) => {
   return sales.filter((sale) => dates.includes(sale.date)).reduce((quantity, sale) => quantity + sale.count, 0);
 };
 
 export const getQuantityOfSales = (sales: FormatedSales) => {
-  const hostedGetQuantityInRange = getQuantityInRange(sales);
   const currentDate = format(Date.now(), 'yyyy-MM-dd');
   const [salesPerDay, salesPerWeek, salesPerMonth, salesPerYear] = [
-    hostedGetQuantityInRange([currentDate]),
-    hostedGetQuantityInRange(getDatesRange(subWeeks(currentDate, 1), currentDate, 'yyyy-MM-dd')),
-    hostedGetQuantityInRange(getDatesRange(subMonths(currentDate, 1), currentDate, 'yyyy-MM-dd')),
-    hostedGetQuantityInRange(getDatesRange(subYears(currentDate, 1), currentDate, 'yyyy-MM-dd')),
-  ];
-  return {
-    day: salesPerDay.toLocaleString(),
-    week: salesPerWeek.toLocaleString(),
-    month: salesPerMonth.toLocaleString(),
-    year: salesPerYear.toLocaleString(),
-  };
+    getQuantityInRange(sales, [currentDate]),
+    getQuantityInRange(sales, getDatesRange(subWeeks(currentDate, 1), currentDate, 'yyyy-MM-dd')),
+    getQuantityInRange(sales, getDatesRange(subMonths(currentDate, 1), currentDate, 'yyyy-MM-dd')),
+    getQuantityInRange(sales, getDatesRange(subYears(currentDate, 1), currentDate, 'yyyy-MM-dd')),
+  ].map((quantity) => quantity.toLocaleString());
+  return { day: salesPerDay, week: salesPerWeek, month: salesPerMonth, year: salesPerYear };
 };
