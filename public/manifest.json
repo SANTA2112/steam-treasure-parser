@@ -18,7 +18,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["/script.js"],
+      "resources": ["/index.js"],
       "matches": ["<all_urls>"]
     }
   ]
