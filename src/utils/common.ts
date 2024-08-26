@@ -1,5 +1,4 @@
 import { FormatedSales } from '../types';
-import { getDatesRange, getQuantityInRange } from './dates';
 
 export const addSelectListener = () => {
   document.addEventListener<'click'>('click', (event) => {
