@@ -2,13 +2,9 @@
 
 [Download link .zip](https://disk.yandex.ru/d/01zYv5UR7yuYPQ)
 
-## Video Demonstration
-
-https://disk.yandex.ru/i/yV-xPUJVqZOGkw
-
 ## Screenshots
 
-![CS:GO Case Prices](./images/389abf0c01.png)
-![Dota2 Case Prices](./images/c6b3f99ad8.png)
-![Rust Prices](./images/j4k32jkh432jk.png)
-![Item Image](./images/c460a2d012.png)
+![CS:GO Case Prices](./images/cs_case.png)
+![Dota2 Case Prices](./images/dota_case.png)
+![TF Prices](./images/rust_prices.png)
+![Item Image](./images/item_image.png)
