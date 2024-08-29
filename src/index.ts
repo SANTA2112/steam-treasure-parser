@@ -14,9 +14,10 @@ import {
   renderAveragePricePerQuarters,
   renderPriceValue,
   renderSalesRangeSlider,
+  renderWrapper,
 } from './utils/prices';
 import { fetchItemPrice } from './api';
-import { addRangeSliderScript } from './utils/common';
+import { addRangeSliderScript, addTabsScript } from './utils/common';
 
 toastr.options = toastrOptions;
 
@@ -37,13 +38,15 @@ const main = async () => {
   }
 
   if (itemNode) {
+    const wrapper = renderWrapper(itemNode);
     const averagePricePerQuarters = getAveragePricePerQuarters(prices);
     const quantityOfSales = getQuantityOfSales(prices);
-    renderPriceValue(itemNode, Number(itemPriceValue) / 100, price_suffix);
-    renderAveragePricePerQuarters(averagePricePerQuarters, itemNode, price_suffix);
-    renderQuantityOfSales(quantityOfSales, itemNode);
-    renderSalesRangeSlider(itemNode);
+    renderPriceValue(wrapper, Number(itemPriceValue) / 100, price_suffix);
+    renderQuantityOfSales(quantityOfSales, wrapper);
+    renderAveragePricePerQuarters(averagePricePerQuarters, wrapper, price_suffix);
+    renderSalesRangeSlider(wrapper);
     addRangeSliderScript(prices);
+    addTabsScript();
 
     item_info.descriptions = findItemsInTreause(appid, item_info);
 
@@ -52,7 +55,7 @@ const main = async () => {
       await parallel<IItemPropertyDescription, void>(item_info.descriptions, {
         handler: giveItemsPrice,
         concurrency: 1,
-        timeout: 3500,
+        timeout: 5000,
         errorHandler,
         needResults: false,
       });

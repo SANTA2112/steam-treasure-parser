@@ -80,3 +80,21 @@ export const addRangeSliderScript = (salesRaw: FormatedSales) => {
     });
   });
 };
+
+export const addTabsScript = () => {
+  const tabs = Array.from(document.querySelectorAll('.tab-stp'));
+  const data = Array.from(document.querySelectorAll('.prices-content-stp'));
+
+  const activateTab = (index: number) => {
+    tabs.forEach((tab) => tab.classList.remove('active'));
+    data.forEach((el) => el.classList.remove('active'));
+    tabs[index].classList.add('active');
+    data[index].classList.add('active');
+  };
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => {
+      activateTab(i);
+    });
+  });
+};

@@ -103,40 +103,43 @@ export const findItemsInTreause = (appid: string, items: IItemProperties): IItem
   }
 };
 
-export const giveItemsPriceSetParams = (appid: string) => async (item: IItemPropertyDescription) => {
-  toastr.info(`Getting price for: ${item.value}`);
-  const subitems = await getSubItemsAndPrice(appid, item);
-  item.subitems = subitems;
-
-  if (subitems.length === 0) {
-    const itemInfo = await fetchItemInfo(appid, item.value);
-    if (itemInfo.success) {
-      const { asset_description } = itemInfo.results[0];
-      item.image = `https://community.akamai.steamstatic.com/economy/image/${asset_description.icon_url}`;
-      item.price = itemInfo.results[0].sale_price_text;
-      item.market_hash_name = itemInfo.results[0].hash_name;
+export const giveItemsPriceSetParams = (appid: string) =>
+  async function inner(item: IItemPropertyDescription) {
+    toastr.info(`Getting price for: ${item.value}`);
+    const subitems = await getSubItemsAndPrice(appid, item);
+    item.subitems = subitems;
+    if (appid === '730' && subitems.length === 0) {
+      return inner(item);
     }
-  }
 
-  createItem(appid, item);
-  render(item);
-};
+    if (subitems.length === 0) {
+      const itemInfo = await fetchItemInfo(appid, item.value);
+      if (itemInfo.success) {
+        const { asset_description } = itemInfo.results[0];
+        item.image = `https://community.akamai.steamstatic.com/economy/image/${asset_description.icon_url}`;
+        item.price = itemInfo.results[0].sale_price_text;
+        item.market_hash_name = itemInfo.results[0].hash_name;
+      }
+    }
+
+    createItem(appid, item);
+    render(item);
+  };
 
 export const renderQuantityOfSales = (prices: TQuantityOfSales, itemNode: Element | null) => {
   const container = document.createElement('div');
   const options = Object.entries(prices)
     .map(
       ([typeOfTime, quantity]) =>
-        `<div class="item__container-stp">
-          <div class="item-stp" style="color: #ffffff">${typeOfTime}: <span class="item__price-stp">${quantity}</span></div>
+        `<div class="quantity-sales-stp">
+          <div class="quantity-sales-item-stp">${typeOfTime}: <span class="total-value-stp">${quantity}</span></div>
         </div>`,
     )
     .join('');
 
-  container.classList.add('select-stp');
-  container.innerHTML = `<svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" class=""></path></svg>
-      <div class="select__label-stp" style="color: #ffffff">Sales per day, week, month, year</div>
-      <div class="select__options-stp">${options}</div>`;
+  container.classList.add('sales-stp');
+  container.innerHTML = `<div class="quantity-sales-heading-stp">Sales count:</div>
+      <div class="quantity-sales-wrapper-stp">${options}</div>`;
 
   itemNode?.insertAdjacentElement('beforeend', container);
 };

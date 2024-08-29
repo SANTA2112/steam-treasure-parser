@@ -31,36 +31,39 @@ export const getAveragePricePerQuarters = (sales: FormatedSales) => {
 
 export const renderAveragePricePerQuarters = (
   prices: priceByQuarters,
-  itemNode: Element | null,
+  itemNode: Element,
   priceSuffix: string,
 ): void => {
-  const container = document.createElement('div');
-  const options = Object.entries(prices)
-    .map(([year, qPrices]) => {
-      const pricesHtml = Object.entries(qPrices)
+  const [container, tabsContainer, contentContainer, heading] = Array.from({ length: 4 }, () =>
+    document.createElement('div'),
+  );
+  container.classList.add('tabs-container');
+  tabsContainer.classList.add('tabs-stp');
+  contentContainer.classList.add('tabs-content-stp');
+  heading.classList.add('tabs-heading');
+  heading.textContent = 'Prices per quarter:';
+  [heading, tabsContainer, contentContainer].forEach((el) => container.appendChild(el));
+  Object.entries(prices).forEach(([year, qPrices], tIndex, tArr) => {
+    console.log(tArr, tArr.length);
+    const baseActiveElement = tIndex === tArr?.length - 1 ? ' active' : '';
+    tabsContainer.insertAdjacentHTML('beforeend', `<button class="tab-stp${baseActiveElement}">${year}</button>`);
+    contentContainer.insertAdjacentHTML(
+      'beforeend',
+      `<div class="prices-content-stp${baseActiveElement}">${Object.entries(qPrices)
         .map(([q, price]) => {
-          return `<div class="item__price-stp">${q}: ${price} ${priceSuffix}</div>`;
+          return `<div class="price-content-stp">${q}: <span class="total-value-stp">${price} ${priceSuffix}</span></div>`;
         })
-        .join('');
-      return `<div class="item__container-stp">
-          <div class="item-stp" style="color: #ffffff">${year}: ${pricesHtml}</div>
-        </div>`;
-    })
-    .join('');
+        .join('')}</div>`,
+    );
+  });
 
-  container.classList.add('select-stp');
-  container.innerHTML = `<svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" class=""></path></svg>
-      <div class="select__label-stp" style="color: #ffffff">Prices per quarters</div>
-      <div class="select__options-stp">${options}</div>`;
-  itemNode?.insertAdjacentElement('beforeend', container);
+  itemNode.insertAdjacentElement('beforeend', container);
 };
 
 export const renderPriceValue = (itemNode: Element, price: number, priceSuffix: string) => {
   return itemNode.insertAdjacentHTML(
     'beforeend',
-    `<div>
-      Price: ${price} ${priceSuffix}
-    </div>`,
+    `<div class="item-price-stp">Steam price: <span class="total-value-stp">${price} ${priceSuffix}</span></div>`,
   );
 };
 
@@ -85,4 +88,11 @@ export const renderSalesRangeSlider = (itemNode: Element) => {
       </div>
     </div>`,
   );
+};
+
+export const renderWrapper = (itemNode: Element): Element => {
+  const wrapper = document.createElement('div');
+  wrapper.classList.add('wrapper-stp');
+  itemNode.insertAdjacentElement('afterend', wrapper);
+  return wrapper;
 };
