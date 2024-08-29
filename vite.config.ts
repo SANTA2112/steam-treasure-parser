@@ -7,6 +7,7 @@ import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 export default defineConfig({
   root: resolve(process.cwd()),
   build: {
+    minify: 'esbuild',
     outDir: resolve(process.cwd(), 'build'),
     rollupOptions: {
       input: resolve(process.cwd(), 'src/index.ts'),
