@@ -97,6 +97,7 @@
   text-align: right;
   display: flex;
   justify-content: space-between;
+  width: 100%;
 }
 /* Range Slider Styles */
 ::selection {
