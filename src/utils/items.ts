@@ -104,16 +104,19 @@ export const findItemsInTreause = (appid: string, items: IItemProperties): IItem
 };
 
 export const giveItemsPriceSetParams = (appid: string) =>
-  async function inner(item: IItemPropertyDescription) {
+  async function inner(item: IItemPropertyDescription, retry = 1) {
     toastr.info(`Getting price for: ${item.value}`);
     const subitems = await getSubItemsAndPrice(appid, item);
     item.subitems = subitems;
-    if (appid === '730' && subitems.length === 0) {
-      return inner(item);
+    if (appid === '730' && subitems.length === 0 && retry < 10) {
+      return inner(item, retry + 1);
     }
 
     if (subitems.length === 0) {
       const itemInfo = await fetchItemInfo(appid, item.value);
+      if (itemInfo.results.length === 0 && retry < 10) {
+        return inner(item, retry + 1);
+      }
       if (itemInfo.success) {
         const { asset_description } = itemInfo.results[0];
         item.image = `https://community.akamai.steamstatic.com/economy/image/${asset_description.icon_url}`;
