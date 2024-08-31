@@ -44,7 +44,6 @@ export const renderAveragePricePerQuarters = (
   heading.textContent = 'Prices per quarter:';
   [heading, tabsContainer, contentContainer].forEach((el) => container.appendChild(el));
   Object.entries(prices).forEach(([year, qPrices], tIndex, tArr) => {
-    console.log(tArr, tArr.length);
     const baseActiveElement = tIndex === tArr?.length - 1 ? ' active' : '';
     tabsContainer.insertAdjacentHTML('beforeend', `<button class="tab-stp${baseActiveElement}">${year}</button>`);
     contentContainer.insertAdjacentHTML(
