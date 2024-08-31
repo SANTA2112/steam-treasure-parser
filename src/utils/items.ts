@@ -78,7 +78,7 @@ const getSubItemsAndPrice = async (appid: string, item: IItemPropertyDescription
 };
 
 export const findItemsInTreause = (appid: string, items: IItemProperties): IItemPropertyDescription[] => {
-  const validColors = ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b'];
+  const validColors = ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b', 'e4ae39'];
   switch (appid) {
     case '570': {
       return items.descriptions.filter(
