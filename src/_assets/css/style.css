@@ -183,9 +183,8 @@
   margin-bottom: 12px;
 }
 .tabs-stp {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
   gap: 10px;
   margin-bottom: 12px;
 }
