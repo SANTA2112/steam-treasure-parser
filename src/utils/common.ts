@@ -98,3 +98,25 @@ export const addTabsScript = () => {
     });
   });
 };
+
+export const waitForSelector = async <T extends Element>(selector: string): Promise<T | null> => {
+  return new Promise((resolve) => {
+    const element = document.querySelector<T>(selector);
+    if (element) {
+      return resolve(element);
+    }
+
+    const observer = new MutationObserver(() => {
+      const foundElement = document.querySelector<T>(selector);
+      if (foundElement) {
+        observer.disconnect();
+        resolve(foundElement);
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  });
+};

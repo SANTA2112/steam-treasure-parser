@@ -17,7 +17,7 @@ import {
   renderWrapper,
 } from './utils/prices';
 import { fetchItemPrice } from './api';
-import { addRangeSliderScript, addTabsScript } from './utils/common';
+import { addRangeSliderScript, addTabsScript, waitForSelector } from './utils/common';
 
 toastr.options = toastrOptions;
 
@@ -29,13 +29,16 @@ const errorHandler = (args: ErrorHandlerArg<IItemPropertyDescription>) => {
 const main = async () => {
   const { appid, currency, language, country, prices, item_nameid, item_info, item_price, price_suffix } = init();
 
-  const itemNode = document.querySelector('#largeiteminfo_item_name');
+  const itemNode = await waitForSelector<HTMLDivElement>('#largeiteminfo_item_name');
 
   let itemPriceValue = item_price;
   if (Number.isNaN(item_price)) {
     const itemPriceResponse = await fetchItemPrice(country, language, currency, item_nameid);
     itemPriceValue = Number(itemPriceResponse.lowest_sell_order);
   }
+
+  console.log(init());
+  console.log(itemNode, itemPriceValue);
 
   if (itemNode) {
     const wrapper = renderWrapper(itemNode);
