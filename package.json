@@ -17,22 +17,21 @@
   "author": "SANTA2112 <s.yushmanov777@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "date-fns": "^3.6.0",
-    "ky": "^1.7.1",
+    "date-fns": "^4.1.0",
+    "ky": "^1.14.2",
     "toastr": "^2.1.4",
-    "vite-plugin-css-injected-by-js": "^3.5.1"
+    "vite-plugin-css-injected-by-js": "^3.5.2"
   },
   "devDependencies": {
-    "@types/node": "^22.5.0",
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^25.0.9",
     "@types/toastr": "^2.1.43",
-    "@typescript-eslint/eslint-plugin": "^8.3.0",
-    "@typescript-eslint/parser": "^8.3.0",
-    "eslint": "^9.9.1",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-prettier": "^5.2.1",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.2"
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.0.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.0",
+    "vite": "^7.3.1"
   }
 }
