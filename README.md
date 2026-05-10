@@ -1,7 +1,3 @@
-## steam-treasure-parser
-
-[Download link .zip](https://disk.yandex.ru/d/Vz5eKiA146WMZg)
-
 ## Screenshots
 
 ![CS:GO Case Prices](./images/cs_case.png)
