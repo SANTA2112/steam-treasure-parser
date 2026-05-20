@@ -1,6 +1,6 @@
 ## Screenshots
 
-![CS:GO Case Prices](./images/cs_case.png)
+![CS2 Case Prices](./images/cs_case.png)
 ![Dota2 Case Prices](./images/dota_case.png)
-![TF Prices](./images/rust_prices.png)
+![TF Case Prices](./images/tf_case.png)
 ![Item Image](./images/item_image.png)
