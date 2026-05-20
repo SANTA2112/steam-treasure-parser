@@ -63,10 +63,12 @@
   margin: 4px 0;
   font-size: 14px;
   line-height: 14px;
+  font-size: inherit;
 }
 .item__name-stp {
   text-overflow: ellipsis;
   overflow: hidden;
+  text-decoration: underline;
 }
 .item__price-stp {
   color: #2fff00;
@@ -78,26 +80,30 @@
   display: flex;
   justify-content: space-between;
   white-space: nowrap;
+  text-decoration: none;
 }
 .item-stp:hover {
   filter: brightness(1.4);
 }
 .sales-stp {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   align-items: center;
   margin-bottom: 12px;
 }
 .quantity-sales-heading-stp {
   font-size: 18px;
-  line-height: 18px;
 }
 .quantity-sales-wrapper-stp {
   font-size: 14px;
-  line-height: 18px;
-  text-align: right;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 2 / -1;
+  gap: 0 16px;
+}
+.quantity-sales-item-stp {
   display: flex;
   justify-content: space-between;
-  width: 100%;
 }
 /* Range Slider Styles */
 ::selection {
