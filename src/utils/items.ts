@@ -1,17 +1,18 @@
 import toastr from 'toastr';
-import { fetchItemInfo } from '../api';
-import { IItemProperties, IItemPropertyDescription } from '../interfaces';
-import { TQuantityOfSales } from '../types';
+import { fetchCSItemInfo, fetchItemInfo, getMarketHashName } from '../api';
+import type { Description, QueryData, SubItem } from '../interfaces';
+import type { TQuantityOfSales } from '../types';
+import type { API } from '../api.types';
 
-const createItem = (appid: string, item: IItemPropertyDescription): void => {
+const createItem = (item: SubItem, subitems: SubItem[]): HTMLDivElement => {
   const container: HTMLDivElement = document.createElement('div');
-  container.classList.add(item.subitems.length !== 0 ? 'select-stp' : 'item__container-stp');
+  container.classList.add(subitems.length !== 0 ? 'select-stp' : 'item__container-stp');
 
-  if (item.subitems.length !== 0) {
-    container.innerHTML = `<svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" class=""></path></svg>
-        <div class="select__label-stp" style="color: #${item.color}">${item.value}</div>
+  if (subitems.length !== 0) {
+    container.innerHTML = `<svg class="select__arrow-stp" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="#${item.color}" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"></path></svg>
+        <div class="select__label-stp" style="color: #${item.color}">${item.market_hash_name}</div>
         <div class="select__options-stp">
-        ${item.subitems
+        ${subitems
           .map(
             (el) => `
           <div class="item__container-stp">
@@ -23,10 +24,10 @@ const createItem = (appid: string, item: IItemPropertyDescription): void => {
             </div>
             <a
               class="item-stp item-stp__item"
-              href="https://steamcommunity.com/market/listings/${appid}/${el.market_hash_name}"
+              href="${el.link}"
               target="_blank"
               style="color: #${item.color}"
-            ><span class="item__name-stp">${el.name}</span><span class="item__price-stp"> ${el.price}</span></a
+            ><span class="item__name-stp">${el.market_hash_name}</span><span class="item__price-stp"> ${el.price}</span></a
             >
           </div>
         `,
@@ -37,53 +38,112 @@ const createItem = (appid: string, item: IItemPropertyDescription): void => {
     container.innerHTML = `<div class="item__image-container-stp">
           <img class="item__image-stp" src="${item.image}" />
         </div>
-        <a class="item-stp item-stp__item" href="https://steamcommunity.com/market/listings/${appid}/${item.market_hash_name}" target="_blank" style="color: #${item.color}">
-          <span class="item__name-stp">${item.value}</span>
+        <a class="item-stp item-stp__item" href="${item.link}" target="_blank" style="color: #${item.color}">
+          <span class="item__name-stp">${item.market_hash_name}</span>
           <span class="item__price-stp"> ${item.price}</span>
         </a>`;
   }
-  item.domNode = container;
+  return container;
 };
 
-const render = (item: IItemPropertyDescription) => {
-  const descriptors = document.querySelectorAll(
-    '#largeiteminfo_item_descriptors .descriptor[style], #largeiteminfo_item_descriptors span[style]',
-  );
-  const htmlItem = Array.from(descriptors).find((el) =>
-    el?.textContent?.startsWith(item.value.trim()),
-  ) as HTMLDivElement;
-  if (htmlItem) htmlItem.parentElement?.replaceChild(item.domNode, htmlItem);
+export const findSubItemOnPage = (itemName: string) => {
+  const descriptors = document.querySelectorAll<HTMLDivElement>('div[style^="--direction:"] div');
+  const htmlItem = Array.from(descriptors).find((el) => el?.textContent?.startsWith(itemName));
+  return htmlItem ?? null;
 };
 
-const getSubItemsAndPrice = async (appid: string, item: IItemPropertyDescription) => {
+const render = (itemName: string, container: HTMLDivElement) => {
+  const htmlItem = findSubItemOnPage(itemName);
+  if (htmlItem) {
+    container.classList.add(...Array.from(htmlItem.classList));
+    htmlItem.removeAttribute('style');
+    htmlItem.parentElement?.replaceChild(container, htmlItem);
+  }
+};
+
+const addCSOptionsForLink = (link: string, filters: API.CSItemBuskets['buckets'][0]['filters']) => {
+  const url = new URL(link);
+  filters.forEach((params) => {
+    const [key, value] = params;
+    if (key === 'Quality') {
+      url.searchParams.set('category_730_Quality', `tag_${value}`);
+    }
+    if (key === 'Exterior') {
+      url.searchParams.set('category_730_Exterior', `tag_${value}`);
+    }
+  });
+
+  return url.toString();
+};
+
+const getSubItemsAndPrice = async (appid: string, item: Description): Promise<SubItem[]> => {
   if (appid !== '730' && appid !== '440') {
     return [];
   }
 
-  const r = await fetchItemInfo(appid, item.value, 100);
+  if (appid === '730') {
+    const marketHashName = await getMarketHashName(item.value).then((items) => items.at(0)?.market_hash_name ?? null);
+    if (!marketHashName) return [];
 
-  if (!r.success) {
-    return [];
+    const itemInfo = await fetchCSItemInfo(appid, marketHashName);
+    const buskets = itemInfo.find((el) => 'buckets' in el)?.buckets;
+    const queryDataString = itemInfo.find((el) => 'queryData' in el)?.queryData;
+
+    if (!buskets || !queryDataString) return [];
+
+    const queryData = JSON.parse(queryDataString) as QueryData;
+    const descriptions = queryData.queries.filter((el) => el.queryKey.includes('description'));
+
+    return buskets
+      .toSorted((a, b) => parseFloat(b.strPrice) - parseFloat(a.strPrice))
+      .map((subItem) => {
+        const itemUrl = descriptions.find((el) => el.queryKey.includes(subItem.bucket_id))?.state.data.icon_url ?? null;
+        return {
+          market_hash_name: subItem.bucket_id,
+          price: subItem.strPrice,
+          link: addCSOptionsForLink(
+            `https://steamcommunity.com/market/listings/${appid}/${marketHashName}`,
+            subItem.filters,
+          ),
+          color: item.color ?? null,
+          image: `https://community.akamai.steamstatic.com/economy/image/${itemUrl}`,
+        };
+      });
   }
 
-  return r.results
-    .filter((subItem) => subItem.name.includes(item.value))
-    .sort((a, b) => a.sell_price - b.sell_price)
-    .map((subItem) => ({
-      name: subItem.name,
-      market_hash_name: subItem.hash_name,
-      price: subItem.sale_price_text,
-      image: `https://community.akamai.steamstatic.com/economy/image/${subItem.asset_description.icon_url}`,
-    }));
+  if (appid === '440') {
+    const itemsNames = await getMarketHashName(item.value);
+    const results = [];
+    for (let itemName of itemsNames) {
+      const { listings, total_count } = await fetchItemInfo(appid, itemName.market_hash_name);
+      if (total_count === 0) {
+        continue;
+      }
+      const itemInfo = listings.find((el) => 'description' in el);
+      if (!itemInfo) {
+        continue;
+      }
+      results.push({
+        market_hash_name: itemName.market_hash_name,
+        price: itemInfo.strSubtotal,
+        link: `https://steamcommunity.com/market/listings/${appid}/${itemName.market_hash_name}`,
+        color: item.color ?? null,
+        image: itemName.icon_url,
+      });
+    }
+    return results;
+  }
+
+  return [];
 };
 
-export const findItemsInTreause = (appid: string, items: IItemProperties): IItemPropertyDescription[] => {
-  const validColors = ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b', 'e4ae39'];
+export const findItemsInTreause = (appid: string, items: Description[]): Description[] => {
+  const validColors = ['b0c3d9', '5e98d9', '4b69ff', '8847ff', 'd32ce6', 'eb4b4b', 'e4ae39', 'ade55c'];
   switch (appid) {
     case '570': {
-      return items.descriptions.filter(
+      return items.filter(
         (el) =>
-          validColors.includes(('color' in el && el.color) || '') &&
+          validColors.includes(('color' in el && el.color.toLowerCase()) || '') &&
           !el.value.includes('The International') &&
           !el.value.includes('Battle Pass Levels') &&
           !el.value.includes('/') &&
@@ -91,11 +151,11 @@ export const findItemsInTreause = (appid: string, items: IItemProperties): IItem
       );
     }
     case '730': {
-      return items.descriptions.filter((el) => validColors.includes(('color' in el && el.color) || ''));
+      return items.filter((el) => validColors.includes(('color' in el && el.color.toLowerCase()) || ''));
     }
     case '440': {
-      return items.descriptions.filter((el) =>
-        validColors.concat('6f6a63').includes(('color' in el && el.color) || ''),
+      return items.filter((el) =>
+        validColors.concat('6f6a63').includes(('color' in el && el.color.toLowerCase()) || ''),
       );
     }
     default:
@@ -103,40 +163,50 @@ export const findItemsInTreause = (appid: string, items: IItemProperties): IItem
   }
 };
 
-export const giveItemsPriceSetParams = (appid: string) =>
-  async function inner(item: IItemPropertyDescription, retry = 1) {
-    toastr.info(`Getting price for: ${item.value}`);
-    const subitems = await getSubItemsAndPrice(appid, item);
-    item.subitems = subitems;
-    if (appid === '730' && subitems.length === 0 && retry < 10) {
-      return inner(item, retry + 1);
-    }
-
-    if (subitems.length === 0) {
-      const itemInfo = await fetchItemInfo(appid, item.value);
-      if (itemInfo.results.length === 0 && retry < 10) {
-        return inner(item, retry + 1);
-      }
-      if (itemInfo.success) {
-        const { asset_description } = itemInfo.results[0];
-        item.image = `https://community.akamai.steamstatic.com/economy/image/${asset_description.icon_url}`;
-        item.price = itemInfo.results[0].sale_price_text;
-        item.market_hash_name = itemInfo.results[0].hash_name;
-      }
-    }
-
-    createItem(appid, item);
-    render(item);
+export const giveItemsPricesSetParams = (appid: string) => async (item: Description) => {
+  toastr.info(`Getting price for: ${item.value}`);
+  const subitems = await getSubItemsAndPrice(appid, item);
+  const mainItem: SubItem = {
+    price: '',
+    image: '',
+    color: item.color ?? null,
+    link: '',
+    market_hash_name: item.value,
   };
+
+  if (subitems.length === 0) {
+    const itemData = await fetchItemInfo(appid, item.value);
+    const { listings, total_count } = itemData;
+    if (total_count === 0) {
+      toastr.error(`Info for item: ${item.value} not found`);
+      return;
+    }
+    const itemInfo = listings.toSorted((a, b) => parseFloat(b.strSubtotal) - parseFloat(a.strSubtotal)).at(0);
+    if (!itemInfo?.description) {
+      toastr.error(`Info for item: ${item.value} not found`);
+      return;
+    }
+    const { icon_url, market_hash_name } = itemInfo.description;
+    const price = itemInfo.strSubtotal;
+    const image = `https://community.akamai.steamstatic.com/economy/image/${icon_url}`;
+    const color = item.color ?? null;
+    const link = `https://steamcommunity.com/market/listings/${appid}/${item.value}`;
+
+    const mainItem: SubItem = { price, image, color, link, market_hash_name };
+    const container = createItem(mainItem, []);
+    return render(item.value, container);
+  }
+
+  const container = createItem(mainItem, subitems);
+  return render(item.value, container);
+};
 
 export const renderQuantityOfSales = (prices: TQuantityOfSales, itemNode: Element | null) => {
   const container = document.createElement('div');
   const options = Object.entries(prices)
     .map(
       ([typeOfTime, quantity]) =>
-        `<div class="quantity-sales-stp">
-          <div class="quantity-sales-item-stp">${typeOfTime}: <span class="total-value-stp">${quantity}</span></div>
-        </div>`,
+        `<div class="quantity-sales-item-stp">${typeOfTime}: <span class="total-value-stp">${quantity}</span></div>`,
     )
     .join('');
 

@@ -1,50 +1,29 @@
-import { CurrencyData, IInit, IItemAssets, IPriceHistory, ListingInfo, WalletInfo } from '../interfaces';
-import { addSelectListener } from './common';
-import { changeSalesDateByGMT } from './dates';
+import type { IInit, QueryData } from '../interfaces';
 
 declare global {
   interface Window {
-    g_strLanguage: string;
-    g_strCountryCode: string;
-    g_rgWalletInfo: WalletInfo;
-    g_plotPriceHistory: {
-      data: [IPriceHistory['prices']];
+    SSR: {
+      renderContext: {
+        queryData: string;
+      };
     };
-    g_rgAssets: IItemAssets;
-    g_rgCurrencyData: Record<string, CurrencyData>;
-    g_rgListingInfo: Record<string, ListingInfo>;
   }
 }
 
-export const init = (): IInit => {
-  const [appid, market_hash_name] = window.location.pathname.split('/').slice(-2);
+export const init = (queryDataFromRequest?: QueryData): IInit => {
+  const queryData: QueryData = queryDataFromRequest ?? JSON.parse(window.SSR.renderContext.queryData);
+  const pricesData = queryData.queries.find((query) => query.queryKey.includes('orderbook'))!;
+  const priceHistory = queryData.queries.find((query) => query.queryKey.includes('pricehistory'))!;
+  const marketItemInfo = queryData.queries.find((query) => query.queryKey.includes('description'))!;
 
-  const language = window.g_strLanguage || 'english';
-  const country = window.g_strCountryCode || 'US';
-  const currency = window.g_rgWalletInfo?.['wallet_currency'] || 1;
-  const prices = changeSalesDateByGMT(window.g_plotPriceHistory?.data?.[0] || []);
-  const { converted_price, converted_fee } = window.g_rgListingInfo[Object.keys(window.g_rgListingInfo)[0]];
-  const item_price = converted_price + converted_fee;
-  const item_nameid = window.document.body.innerHTML.match(/Market_LoadOrderSpread\(\s*(\d+)\s*\)/)?.[1] || '';
-  const item_info =
-    window.g_rgAssets[appid][Object.keys(window.g_rgAssets[appid])[0]][
-      Object.keys(window.g_rgAssets[appid][Object.keys(window.g_rgAssets[appid])[0]])[0]
-    ];
-  const price_suffix =
-    Object.values(window.g_rgCurrencyData).find((cur) => cur.eCurrencyCode === currency)?.strSymbol || '';
+  const currency = pricesData.state.data.eCurrency!.toString() as IInit['currency'];
+  const itemSellPrice = pricesData.state.data.amtMinSellOrder!;
+  const itemBuyPrice = pricesData.state.data.amtMaxBuyOrder!;
+  const prices = priceHistory.state.data.prices!.map((sale) => ({ ...sale, time: sale.time * 1000 }));
 
-  addSelectListener();
+  const description = marketItemInfo.state.data;
+  const urlPath = new URL(window.location.href).pathname.split('/');
+  const { descriptions = [], appid = urlPath.at(-1) || 'Unknown APP ID' } = description;
 
-  return {
-    appid,
-    market_hash_name,
-    currency,
-    language,
-    country,
-    prices,
-    item_nameid,
-    item_info,
-    price_suffix,
-    item_price,
-  };
+  return { appid: String(appid), currency, itemSellPrice, itemBuyPrice, prices, descriptions };
 };

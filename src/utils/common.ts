@@ -1,20 +1,28 @@
-import { FormatedSales } from '../types';
+import { format } from 'date-fns';
+import type { Price } from '../interfaces';
+
+export const fixJson = (data: string) => {
+  return `[${data.replaceAll(/\n/g, '').replaceAll(/(\}\{)|(\}true\{)/g, '},{')}]`;
+};
 
 export const addSelectListener = () => {
   document.addEventListener<'click'>('click', (event) => {
     if (event.target) {
-      const { parentElement } = event.target as unknown as HTMLElement;
+      const target = event.target as unknown as HTMLDivElement;
+      const { parentElement } = target;
+      if (target.classList.contains('select-stp')) target.classList.toggle('active');
       if (parentElement?.classList.contains('select-stp')) parentElement.classList.toggle('active');
     }
   });
 };
 
-export const addRangeSliderScript = (salesRaw: FormatedSales) => {
+export const addRangeSliderScript = (salesRaw: Price[]) => {
   const sales = Object.entries(
-    salesRaw.reduce<Record<string, number>>(
-      (acc, sale) => ((acc[sale.date] = (acc[sale.date] ?? 0) + sale.count), acc),
-      {},
-    ),
+    salesRaw.reduce<Record<string, number>>((acc, sale) => {
+      const date = format(sale.time, 'yyyy-MM-dd');
+      acc[date] = (acc[date] ?? 0) + sale.purchases;
+      return acc;
+    }, {}),
   ).map(([date, count]) => ({ date, count }));
 
   const calcTotalSales = (startDate: string, endDate: string) => {
@@ -36,49 +44,57 @@ export const addRangeSliderScript = (salesRaw: FormatedSales) => {
   const maxDateIndex = Math.max(1, sales.length - 1);
   const [rangeMin, rangeMax] = rangeInputElements;
   const [dateInfoMin, dateInfoMax] = dateInfoElements;
-  rangeInputElements.forEach((range) => range.setAttribute('max', maxDateIndex.toString()));
-  rangeMax.setAttribute('value', maxDateIndex.toString());
-  dateInfoMin.textContent = sales[minDateIndex].date;
-  dateInfoMax.textContent = sales[maxDateIndex].date;
-  dateInfoMin.dataset.value = minDateIndex.toString();
-  dateInfoMax.dataset.value = maxDateIndex.toString();
-  totalContainer.textContent = calcTotalSales(sales[minDateIndex].date, sales[maxDateIndex].date).toLocaleString();
+  if (rangeMin && rangeMax && dateInfoMin && dateInfoMax) {
+    rangeInputElements.forEach((range) => range.setAttribute('max', maxDateIndex.toString()));
+    rangeMax.setAttribute('value', maxDateIndex.toString());
+    dateInfoMin.textContent = sales[minDateIndex]!.date;
+    dateInfoMax.textContent = sales[maxDateIndex]!.date;
+    dateInfoMin.dataset.value = minDateIndex.toString();
+    dateInfoMax.dataset.value = maxDateIndex.toString();
+    totalContainer.textContent = calcTotalSales(sales[minDateIndex]!.date, sales[maxDateIndex]!.date).toLocaleString();
 
-  rangeInputElements.forEach((input) => {
-    input.addEventListener('input', (e) => {
-      const target = e.target as HTMLInputElement;
-      const minRangeVal = parseInt(rangeMin.value);
-      const maxRangeVal = parseInt(rangeMax.value);
-      const isMinInput = target.classList.contains('range-min-stp');
-      const rangeVal = isMinInput ? minRangeVal : maxRangeVal;
+    rangeInputElements.forEach((input) => {
+      input.addEventListener('input', (e) => {
+        const target = e.target as HTMLInputElement;
+        const minRangeVal = parseInt(rangeMin.value);
+        const maxRangeVal = parseInt(rangeMax.value);
+        const isMinInput = target.classList.contains('range-min-stp');
+        const rangeVal = isMinInput ? minRangeVal : maxRangeVal;
 
-      if (isMinInput) {
-        rangeMin.value = rangeVal.toString();
-        dateInfoMin.dataset.value = rangeVal.toString();
-      } else {
-        rangeMax.value = rangeVal.toString();
-        dateInfoMax.dataset.value = rangeVal.toString();
-      }
+        if (isMinInput) {
+          rangeMin.value = rangeVal.toString();
+          dateInfoMin.dataset.value = rangeVal.toString();
+        } else {
+          rangeMax.value = rangeVal.toString();
+          dateInfoMax.dataset.value = rangeVal.toString();
+        }
 
-      if (minRangeVal <= maxRangeVal) {
-        const start = (minRangeVal / Number(rangeMin.max)) * 100;
-        const end = 100 - (maxRangeVal / Number(rangeMax.max)) * 100;
-        dateInfoMin.textContent = sales[minRangeVal].date;
-        dateInfoMax.textContent = sales[maxRangeVal].date;
-        progressBarElement.style.left = `${start}%`;
-        progressBarElement.style.right = `${end}%`;
-        totalContainer.textContent = calcTotalSales(sales[minRangeVal].date, sales[maxRangeVal].date).toLocaleString();
-      } else {
-        const start = (maxRangeVal / Number(rangeMin.max)) * 100;
-        const end = 100 - (minRangeVal / Number(rangeMax.max)) * 100;
-        dateInfoMin.textContent = sales[maxRangeVal].date;
-        dateInfoMax.textContent = sales[minRangeVal].date;
-        progressBarElement.style.left = `${start}%`;
-        progressBarElement.style.right = `${end}%`;
-        totalContainer.textContent = calcTotalSales(sales[maxRangeVal].date, sales[minRangeVal].date).toLocaleString();
-      }
+        if (minRangeVal <= maxRangeVal) {
+          const start = (minRangeVal / Number(rangeMin.max)) * 100;
+          const end = 100 - (maxRangeVal / Number(rangeMax.max)) * 100;
+          dateInfoMin.textContent = sales[minRangeVal]!.date;
+          dateInfoMax.textContent = sales[maxRangeVal]!.date;
+          progressBarElement.style.left = `${start}%`;
+          progressBarElement.style.right = `${end}%`;
+          totalContainer.textContent = calcTotalSales(
+            sales[minRangeVal]!.date,
+            sales[maxRangeVal]!.date,
+          ).toLocaleString();
+        } else {
+          const start = (maxRangeVal / Number(rangeMin.max)) * 100;
+          const end = 100 - (minRangeVal / Number(rangeMax.max)) * 100;
+          dateInfoMin.textContent = sales[maxRangeVal]!.date;
+          dateInfoMax.textContent = sales[minRangeVal]!.date;
+          progressBarElement.style.left = `${start}%`;
+          progressBarElement.style.right = `${end}%`;
+          totalContainer.textContent = calcTotalSales(
+            sales[maxRangeVal]!.date,
+            sales[minRangeVal]!.date,
+          ).toLocaleString();
+        }
+      });
     });
-  });
+  }
 };
 
 export const addTabsScript = () => {
@@ -88,8 +104,8 @@ export const addTabsScript = () => {
   const activateTab = (index: number) => {
     tabs.forEach((tab) => tab.classList.remove('active'));
     data.forEach((el) => el.classList.remove('active'));
-    tabs[index].classList.add('active');
-    data[index].classList.add('active');
+    tabs[index]!.classList.add('active');
+    data[index]!.classList.add('active');
   };
 
   tabs.forEach((tab, i) => {

@@ -1,42 +1,56 @@
 import { getQuarter } from 'date-fns/getQuarter';
-import { priceByQuarters, pricesByQuarters } from '../interfaces';
-import { Quarters, FormatedSales } from '../types';
+import { getYear } from 'date-fns/getYear';
+import type { Price } from '../interfaces';
+import type { PricesByYear, Quarters } from '../types';
 
-export const getAveragePricePerQuarters = (sales: FormatedSales) => {
-  const collected: pricesByQuarters = {};
-  for (const sale of sales) {
-    const [year] = sale.date.split('-');
-    const quarter = getQuarter(sale.date).toString();
-    if (!collected[year]) {
-      collected[year] = { '1': [], '2': [], '3': [], '4': [] };
-    }
-    collected[year][quarter as Quarters].push(sale.price);
-  }
+export const getAveragePricePerQuarters = (sales: Price[]) => {
+  const collected = sales.reduce<PricesByYear>((acc, sale) => {
+    const year = String(getYear(sale.time));
+    const quarter = String(getQuarter(sale.time)) as Quarters;
 
-  const calculated: priceByQuarters = {};
-  for (const year in collected) {
-    if (year in collected) {
-      calculated[year] = { '1': 0, '2': 0, '3': 0, '4': 0 };
-      for (const quarter in collected[year]) {
-        if (quarter in collected[year]) {
-          const qPrices = collected[year][quarter as Quarters];
-          calculated[year][quarter as Quarters] =
-            Math.round((qPrices.reduce((acc, price) => acc + price, 0) / qPrices.length) * 100) / 100 || 0;
-        }
+    acc[year] ??= {
+      '1': { sum: 0, count: 0 },
+      '2': { sum: 0, count: 0 },
+      '3': { sum: 0, count: 0 },
+      '4': { sum: 0, count: 0 },
+    };
+
+    acc[year][quarter].sum += sale.price_median;
+    acc[year][quarter].count += 1;
+
+    return acc;
+  }, {});
+
+  const result: Record<string, Record<Quarters, number>> = {};
+
+  for (const year of Object.keys(collected)) {
+    result[year] = {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0,
+    };
+
+    for (const quarter of ['1', '2', '3', '4'] as const) {
+      if (year in collected) {
+        const { sum, count } = collected[year]![quarter];
+        result[year][quarter] = count ? Math.round((sum / count) * 100) / 100 : 0;
       }
     }
   }
-  return calculated;
+
+  return result;
 };
 
 export const renderAveragePricePerQuarters = (
-  prices: priceByQuarters,
+  prices: ReturnType<typeof getAveragePricePerQuarters>,
   itemNode: Element,
   priceSuffix: string,
 ): void => {
-  const [container, tabsContainer, contentContainer, heading] = Array.from({ length: 4 }, () =>
-    document.createElement('div'),
-  );
+  const container = document.createElement('div'),
+    tabsContainer = document.createElement('div'),
+    contentContainer = document.createElement('div'),
+    heading = document.createElement('div');
   container.classList.add('tabs-container');
   tabsContainer.classList.add('tabs-stp');
   contentContainer.classList.add('tabs-content-stp');
@@ -59,10 +73,14 @@ export const renderAveragePricePerQuarters = (
   itemNode.insertAdjacentElement('beforeend', container);
 };
 
-export const renderPriceValue = (itemNode: Element, price: number, priceSuffix: string) => {
+export const makePrice = (price: number, priceSuffix: string) => {
+  return `${price / 100} ${priceSuffix}`;
+};
+
+export const renderPriceValue = (itemNode: Element, price: number, priceSuffix: string, type: 'sell' | 'buy') => {
   return itemNode.insertAdjacentHTML(
     'beforeend',
-    `<div class="item-price-stp">Steam price: <span class="total-value-stp">${price} ${priceSuffix}</span></div>`,
+    `<div class="item-price-stp">Steam ${type} price: <span class="total-value-stp">${makePrice(price, priceSuffix)}</span></div>`,
   );
 };
 
