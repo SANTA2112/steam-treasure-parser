@@ -1,13 +1,14 @@
 import { fixJson } from './utils/common';
 
+const balanceTargetUrl = '/IParentalService/GetParentalSettings';
+const lotsTargetUrl = '/market/listings/';
+const updatePrices = '/orderbook';
+
 (function () {
   const originalFetch = window.fetch;
 
   window.fetch = async function (...args) {
     const [resource] = args;
-    const balanceTargetUrl = '/IParentalService/GetParentalSettings';
-    const lotsTargetUrl = '/market/listings/';
-    const updatePrices = '/orderbook';
     const url = resource instanceof Request ? resource.url : String(resource);
 
     if (resource instanceof Request && resource.headers.has('client')) {
